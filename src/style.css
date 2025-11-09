@@ -1,0 +1,8 @@
+body {
+	margin: 0px;
+	display: flex;
+	background-image: url("./assets/login-page-bg.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	font-family: "Inter", sans-serif;
+}
