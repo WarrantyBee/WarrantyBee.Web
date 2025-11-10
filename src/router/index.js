@@ -1,17 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
-import LoginPage from "../pages/LoginPage.vue";
-import HomePage from "../pages/HomePage.vue";
+import AuthPage from "../pages/AuthPage.vue";
 
 const routes = [
 	{
-		path: "/login",
-		name: "Login",
-		component: LoginPage,
-	},
-	{
 		path: "/",
-		name: "Home",
-		component: HomePage,
+		name: "Auth",
+		component: AuthPage,
 	},
 ];
 
@@ -22,8 +16,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
 	const accessToken = localStorage.getItem("WARRANTYBEE_ACCESS_TOKEN");
-	if (!accessToken && to.name !== "Login") {
-		next({ name: "Login" });
+	if (!accessToken && to.name !== "Auth") {
+		next({ name: "Auth" });
 	} else {
 		next();
 	}
