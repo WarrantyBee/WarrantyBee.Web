@@ -1,18 +1,14 @@
 <template>
-	<Login />
+	<Login v-if="activeComponent === components.Login" />
 </template>
 
 <script setup>
+import { reactive, ref } from "vue";
 import Login from "../components/Login.vue";
+import { HomePageComponents } from "../constants";
+
+const components = reactive(HomePageComponents);
+const activeComponent = ref(components.Login);
 </script>
 
-<style scoped>
-.login-page {
-	height: 100%;
-	width: 100%;
-}
-
-.login-page .el-col {
-	max-width: max-content;
-}
-</style>
+<style lang="scss" scoped></style>

@@ -1,43 +1,84 @@
 <template>
 	<div id="login-container" class="d-flex">
 		<div class="d-flex h-100 info-section"></div>
-		<div class="d-flex flex-column h-100 form-section">
-			<div class="d-flex justify-content-end">
-				<el-select v-model="value" placeholder="Select" style="width: 240px">
-					<el-option
-						v-for="item in languages"
-						:key="item.value"
-						:label="item.label"
-						:value="item.value"
-					/>
-				</el-select>
-			</div>
-			<div class="d-flex justify-content-center">
-				<h1 class="poppins-semibold">Sign in to WarrantyBee</h1>
-			</div>
-			<div class="login-form">
-				<el-form>
-					<el-form-item>
-						<el-input placeholder="Email" size="large" clearable>
-							<template #prefix>
-								<font-awesome-icon icon="envelope" />
-							</template>
-						</el-input>
-					</el-form-item>
-					<el-form-item>
-						<el-input placeholder="Password" size="large" clearable>
-							<template #prefix>
-								<font-awesome-icon icon="lock" />
-							</template>
-						</el-input>
-					</el-form-item>
-					<div class="forgot-password d-flex justify-content-center">
-						<span class="poppins-light">Forgot your password?</span>
+		<div
+			class="d-flex justify-content-center align-items-center h-100 form-section"
+		>
+			<div class="">
+				<div class="d-flex justify-content-center">
+					<h1 class="poppins-semibold">Sign in to WarrantyBee</h1>
+				</div>
+				<div class="d-flex mt-4 login-providers justify-content-center">
+					<div class="d-flex gap-3">
+						<div class="icon">
+							<font-awesome-icon :icon="['fab', 'facebook-f']" class="fa-lg" />
+						</div>
+						<div class="icon">
+							<font-awesome-icon :icon="['fab', 'google']" class="fa-lg" />
+						</div>
+						<div class="icon">
+							<font-awesome-icon :icon="['fab', 'linkedin-in']" class="fa-lg" />
+						</div>
 					</div>
-					<el-form-item class="justify-content-center">
-						<el-button type="primary">SIGN IN</el-button>
-					</el-form-item>
-				</el-form>
+				</div>
+				<div
+					class="d-flex account-credential-label justify-content-center poppins-light"
+				>
+					<p>or use your account credentials</p>
+				</div>
+				<div class="login-form">
+					<el-form>
+						<el-form-item>
+							<el-input
+								v-model="loginForm.email"
+								class="poppins-light"
+								placeholder="Email"
+								size="large"
+								clearable
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'envelope']"
+										class="fa-lg text-body"
+									/>
+								</template>
+							</el-input>
+						</el-form-item>
+						<el-form-item>
+							<el-input
+								v-model="loginForm.password"
+								class="poppins-light"
+								type="password"
+								placeholder="Password"
+								size="large"
+								clearable
+								show-password
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'lock']"
+										class="fa-lg text-body"
+									/>
+								</template>
+							</el-input>
+						</el-form-item>
+						<div class="forgot-password d-flex justify-content-center">
+							<span class="poppins-light">Forgot your password?</span>
+						</div>
+						<el-form-item class="justify-content-center">
+							<el-button
+								class="poppins-light mt-5"
+								type="primary"
+								size="large"
+								round
+								plain
+								@click="console.log(loginForm)"
+							>
+								SIGN IN
+							</el-button>
+						</el-form-item>
+					</el-form>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -134,22 +175,49 @@ const submitLogin = (formEl) => {
 		flex-basis: 40%;
 		border-top-left-radius: 10px;
 		border-bottom-left-radius: 10px;
-		background: #001f66;
+		background: url("../assets/login-info-section-bg.png");
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
 	}
 
 	.form-section {
 		flex-basis: 60%;
-		padding: 70px 40px;
+		padding: 60px 40px;
+
+		.login-providers {
+			div.icon {
+				padding: 10px;
+				border-radius: 50%;
+				border: 0.5px solid;
+			}
+
+			div.icon:hover {
+				cursor: pointer;
+				background-color: #000000;
+				color: #ffffff;
+			}
+		}
+
+		.account-credential-label p {
+			margin-bottom: 0px;
+			margin-top: 25px;
+		}
 
 		.login-form {
-			padding: 40px 120px;
+			padding: 25px 40px 0px 40px;
 
 			::v-deep(.justify-content-center > .el-form-item__content) {
 				justify-content: center;
 			}
 
+			.el-input__icon {
+				font-size: 18px;
+			}
+
 			.forgot-password span {
 				cursor: pointer;
+				font-size: 14px;
 				text-decoration: underline;
 				text-underline-offset: 10px;
 			}
