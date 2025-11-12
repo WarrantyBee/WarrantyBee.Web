@@ -1,11 +1,17 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AuthPage from "../pages/AuthPage.vue";
+import DashboardPage from "../pages/DashboardPage.vue";
 
 const routes = [
 	{
 		path: "/",
 		name: "Auth",
 		component: AuthPage,
+	},
+	{
+		path: "/dashboard",
+		name: "Dashboard",
+		component: DashboardPage,
 	},
 ];
 
