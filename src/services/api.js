@@ -41,7 +41,7 @@ export async function apiRequest(method, url, data = {}, config = {}) {
 		}
 
 		const response = await apiClient.request({ method, url, data, ...config });
-		return response.data;
+		return response;
 	} catch (error) {
 		throw error;
 	}

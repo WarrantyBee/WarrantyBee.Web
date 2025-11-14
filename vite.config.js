@@ -1,7 +1,22 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [vue()],
-})
+export default defineConfig(({ mode }) => {
+	const isDebug = mode === "debug";
+
+	return {
+		plugins: [vue()],
+
+		build: {
+			sourcemap: isDebug, // Enable only in debug mode
+
+			rollupOptions: {
+				output: {
+					entryFileNames: isDebug ? `[name].js` : `[name]-[hash].js`,
+					chunkFileNames: isDebug ? `[name].js` : `[name]-[hash].js`,
+					assetFileNames: isDebug ? `[name].[ext]` : `[name]-[hash].[ext]`,
+				},
+			},
+		},
+	};
+});
