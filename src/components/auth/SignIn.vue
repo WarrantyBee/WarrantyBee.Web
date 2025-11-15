@@ -39,6 +39,7 @@
 							clearable
 							:disabled="signingIn"
 							@focus="suppressErrors()"
+							@keypress.enter="signIn()"
 						>
 							<template #prefix>
 								<font-awesome-icon
@@ -59,6 +60,7 @@
 							show-password
 							:disabled="signingIn"
 							@focus="suppressErrors()"
+							@keypress.enter="signIn()"
 						>
 							<template #prefix>
 								<font-awesome-icon
@@ -75,10 +77,7 @@
 						<small v-if="errors.wrongEmailOrPassword" class="poppins-light">
 							You have given wrong credentials
 						</small>
-						<small
-							v-else-if="errors.userAlreadyRegistered"
-							class="poppins-light"
-						>
+						<small v-else-if="errors.userNotRegistered" class="poppins-light">
 							No account is associated with the given email
 						</small>
 					</div>
@@ -163,7 +162,7 @@ const signInFormRules = reactive({
 	],
 });
 const errors = reactive({
-	userAlreadyRegistered: false,
+	userNotRegistered: false,
 	wrongEmailOrPassword: false,
 });
 
@@ -172,7 +171,7 @@ const hasError = () => {
 };
 
 const suppressErrors = () => {
-	errors.userAlreadyRegistered = false;
+	errors.userNotRegistered = false;
 	errors.wrongEmailOrPassword = false;
 };
 
@@ -180,9 +179,9 @@ const signIn = async () => {
 	let hasFormValidationError = true;
 
 	try {
+		suppressErrors();
 		await signInFormRef.value.validate();
 		hasFormValidationError = false;
-		suppressErrors();
 		signingIn.value = true;
 		const requestBody = {
 			type: LoginTypes.SIMPLE,
@@ -230,7 +229,7 @@ const signIn = async () => {
 
 		if (error.response?.status === HttpStatus.NOT_FOUND) {
 			if (error.response.data?.error?.code === ErrorCodes.USER_NOT_REGISTERED) {
-				errors.userAlreadyRegistered = true;
+				errors.userNotRegistered = true;
 				return;
 			}
 		}

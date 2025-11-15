@@ -26,10 +26,12 @@
 					v-for="(digit, index) in otp"
 					:key="index"
 					v-model="otp[index]"
+					type="password"
 					maxlength="1"
 					class="otp-input"
 					size="large"
 					@input="focusNext(index)"
+					@keypress="takeDigits"
 					@keydown.backspace="focusPrev(index, $event)"
 					:disabled="signingIn || resending"
 				/>
@@ -160,6 +162,14 @@ const focusPrev = (index, event) => {
 	if (event.key === "Backspace" && !otp.value[index] && index > 0) {
 		const prevInput = document.querySelectorAll(".otp-input input")[index - 1];
 		prevInput?.focus();
+	}
+};
+
+const takeDigits = (event) => {
+	const char = String.fromCharCode(event.keyCode || event.which);
+
+	if (!/^\d$/.test(char)) {
+		event.preventDefault();
 	}
 };
 

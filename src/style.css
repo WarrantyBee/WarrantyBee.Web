@@ -20,3 +20,7 @@ body > * {
 	position: relative;
 	z-index: 1;
 }
+
+.input-field-on-error {
+	box-shadow: 0 0 0 1px var(--el-color-danger) inset !important;
+}

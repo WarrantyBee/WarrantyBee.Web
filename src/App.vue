@@ -12,6 +12,15 @@ import { loadRecaptcha, getRecaptchaToken } from "./services/recaptcha";
 import { onMounted } from "vue";
 import { Events, NotificationTypes } from "./constants";
 
+const showSuccessNotification = (message) => {
+	ElNotification({
+		title: "Success",
+		message: message,
+		type: NotificationTypes.SUCCESS,
+		duration: 5000,
+	});
+};
+
 const showErrorNotification = (message) => {
 	ElNotification({
 		title: "Error",
@@ -19,6 +28,12 @@ const showErrorNotification = (message) => {
 		type: NotificationTypes.ERROR,
 		duration: 5000,
 	});
+};
+
+const notifySuccess = (message) => {
+	document.body.dispatchEvent(
+		new CustomEvent(Events.ON_SUCCESS, { detail: { message } })
+	);
 };
 
 const notifyError = (message) => {
@@ -29,7 +44,11 @@ const notifyError = (message) => {
 
 onMounted(async () => {
 	await loadRecaptcha();
+	window.notifySuccess = notifySuccess;
 	window.notifyError = notifyError;
+	document.body.addEventListener(Events.ON_SUCCESS, (e) =>
+		showSuccessNotification(e.detail.message)
+	);
 	document.body.addEventListener(Events.ON_ERROR, (e) =>
 		showErrorNotification(e.detail.message)
 	);
