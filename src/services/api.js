@@ -1,18 +1,19 @@
 import axios from "axios";
 import { getRecaptchaToken } from "./recaptcha";
-import { HttpMethods } from "../constants";
+import { HttpMethods, CacheKeys, Endpoints } from "../constants";
 
 const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_API_BASE_URL,
 	timeout: 10000,
 	headers: {
 		"Content-Type": "application/json",
+		Authorization: `Bearer ${localStorage.getItem(CacheKeys.ACCESS_TOKEN)}`,
 	},
 });
 
 apiClient.interceptors.request.use(
 	(config) => {
-		const token = localStorage.getItem("authToken");
+		const token = localStorage.getItem(CacheKeys.ACCESS_TOKEN);
 		if (token) config.headers.Authorization = `Bearer ${token}`;
 		return config;
 	},
@@ -31,12 +32,16 @@ apiClient.interceptors.response.use(
 
 export async function apiRequest(method, url, data = {}, config = {}) {
 	try {
+		let recaptchaToken;
+
 		if (method === HttpMethods.POST || method === HttpMethods.PUT) {
-			const recaptchaToken = await getRecaptchaToken();
-			if (data) {
-				data.captchaResponse = recaptchaToken;
-			} else {
-				data = { captchaResponse: recaptchaToken };
+			if (url !== Endpoints.ALIVE) {
+				recaptchaToken = await getRecaptchaToken();
+				if (data) {
+					data.captchaResponse = recaptchaToken;
+				} else {
+					data = { captchaResponse: recaptchaToken };
+				}
 			}
 		}
 

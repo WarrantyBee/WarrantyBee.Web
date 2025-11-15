@@ -220,7 +220,7 @@ const signIn = async () => {
 		signingIn.value = false;
 		if (hasFormValidationError) return;
 
-		if (error.response?.status === HttpStatus.BAD_REQUEST) {
+		if (error?.response?.status === HttpStatus.BAD_REQUEST) {
 			if (error.response.data?.error?.code === ErrorCodes.INVALID_CREDENTIALS) {
 				errors.wrongEmailOrPassword = true;
 				return;

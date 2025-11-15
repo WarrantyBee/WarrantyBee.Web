@@ -257,7 +257,7 @@ const signIn = async () => {
 	} catch (error) {
 		signingIn.value = false;
 
-		if (error.response?.status === HttpStatus.BAD_REQUEST) {
+		if (error?.response?.status === HttpStatus.BAD_REQUEST) {
 			if (error.response.data?.error?.code === ErrorCodes.INVALID_OTP) {
 				errors.invalidAuthCode = true;
 				return;

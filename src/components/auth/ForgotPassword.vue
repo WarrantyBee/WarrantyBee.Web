@@ -319,7 +319,7 @@ const sendOtp = async () => {
 		sending.value = false;
 		if (hasFormValidationError) return;
 
-		if (error.response?.status === HttpStatus.NOT_FOUND) {
+		if (error?.response?.status === HttpStatus.NOT_FOUND) {
 			if (error.response.data?.error?.code === ErrorCodes.USER_NOT_REGISTERED) {
 				errors.userNotRegistered = true;
 				return;
@@ -373,7 +373,7 @@ const resetPassword = async () => {
 		resetting.value = false;
 		if (hasFormValidationError) return;
 
-		if (error.response?.status === HttpStatus.BAD_REQUEST) {
+		if (error?.response?.status === HttpStatus.BAD_REQUEST) {
 			if (error.response.data?.error?.code === ErrorCodes.INVALID_OTP) {
 				errors.invalidOtp = true;
 				return;

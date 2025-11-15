@@ -1,6 +1,6 @@
 <template>
 	<el-container id="app-container">
-		<el-main>
+		<el-main class="p-0">
 			<router-view />
 		</el-main>
 	</el-container>

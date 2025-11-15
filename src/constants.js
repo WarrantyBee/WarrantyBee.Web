@@ -1,4 +1,6 @@
 const Endpoints = {
+	ALIVE: "/alive",
+	SIGN_UP: "/auth/signup",
 	LOGIN: "/auth/login",
 	FORGOT_PASSWORD: "/auth/forgotpassword",
 	RESET_PASSWORD: "/auth/resetpassword",
