@@ -4,7 +4,7 @@ import { HttpMethods, CacheKeys, Endpoints } from "../constants";
 
 const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_API_BASE_URL,
-	timeout: 10000,
+	timeout: import.meta.env.VITE_API_TIMEOUT,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${localStorage.getItem(CacheKeys.ACCESS_TOKEN)}`,
