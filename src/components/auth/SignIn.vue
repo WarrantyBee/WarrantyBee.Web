@@ -40,6 +40,7 @@
 							:disabled="signingIn"
 							@focus="suppressErrors()"
 							@keypress.enter="signIn()"
+							@keydown="blockEmptyInput"
 						>
 							<template #prefix>
 								<font-awesome-icon
@@ -61,6 +62,7 @@
 							:disabled="signingIn"
 							@focus="suppressErrors()"
 							@keypress.enter="signIn()"
+							@keydown="blockEmptyInput"
 						>
 							<template #prefix>
 								<font-awesome-icon
@@ -175,6 +177,12 @@ const suppressErrors = () => {
 	errors.wrongEmailOrPassword = false;
 };
 
+const blockEmptyInput = (event) => {
+	if (event.key === " ") {
+		event.preventDefault();
+	}
+};
+
 const signIn = async () => {
 	let hasFormValidationError = true;
 
@@ -185,8 +193,8 @@ const signIn = async () => {
 		signingIn.value = true;
 		const requestBody = {
 			type: LoginTypes.SIMPLE,
-			email: signInFormData.email,
-			password: signInFormData.password,
+			email: signInFormData.email?.trim(),
+			password: signInFormData.password?.trim(),
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,

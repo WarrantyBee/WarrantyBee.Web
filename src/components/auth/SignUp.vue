@@ -6,14 +6,31 @@
 			<div class="d-flex justify-content-center">
 				<h1 class="poppins-semibold">Sign up to WarrantyBee</h1>
 			</div>
-			<div class="d-flex justify-content-center form-container px-5 pt-4 pb-0">
-				<el-form class="w-100">
+			<div class="d-flex justify-content-center mt-3">
+				<h6 class="poppins-light fade-text" :class="{ show: fade }">
+					{{ currentSubheading }}
+				</h6>
+			</div>
+			<div
+				class="d-flex justify-content-center flex-column form-container px-5 pt-4 pb-0"
+			>
+				<el-form
+					v-if="activeStep === SignUpSteps.FIRST"
+					ref="signUpFormDataPart1Ref"
+					:model="signUpFormDataPart1"
+					:rules="signUpFormDataPart1Rules"
+					class="w-100"
+				>
 					<div class="d-flex gap-3">
-						<el-form-item class="fb-50">
+						<el-form-item class="fb-50" prop="firstname">
 							<el-input
+								name="firstname"
 								class="poppins-light"
 								placeholder="Firstname"
 								size="large"
+								v-model="signUpFormDataPart1.firstname"
+								@keydown="blockEmptyInput"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -23,11 +40,15 @@
 								</template>
 							</el-input>
 						</el-form-item>
-						<el-form-item class="fb-50" large>
+						<el-form-item class="fb-50" prop="lastname">
 							<el-input
+								name="lastname"
 								class="poppins-light"
 								placeholder="Lastname"
 								size="large"
+								v-model="signUpFormDataPart1.lastname"
+								@keydown="blockEmptyInput"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -38,9 +59,17 @@
 							</el-input>
 						</el-form-item>
 					</div>
-					<div class="d-flex gap-3">
-						<el-form-item class="fb-60">
-							<el-input class="poppins-light" placeholder="Email" size="large">
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-100" prop="email">
+							<el-input
+								name="email"
+								class="poppins-light"
+								placeholder="Email"
+								size="large"
+								v-model="signUpFormDataPart1.email"
+								@keydown="blockEmptyInput"
+								@focus="suppressErrors()"
+							>
 								<template #prefix>
 									<font-awesome-icon
 										:icon="['fas', 'envelope']"
@@ -49,12 +78,58 @@
 								</template>
 							</el-input>
 						</el-form-item>
-						<el-form-item class="fb-40">
+					</div>
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-55" prop="phoneNumber">
+							<el-input
+								name="phoneNumber"
+								class="poppins-light"
+								placeholder="Phone number"
+								size="large"
+								v-model="signUpFormDataPart1.phoneNumber"
+								@keydown="allowOnlyDigits"
+								@focus="suppressErrors()"
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'phone']"
+										class="fa-lg text-body"
+									/>
+								</template>
+							</el-input>
+						</el-form-item>
+						<el-form-item class="fb-45" prop="cultureId">
 							<el-select
 								class="poppins-light"
-								v-model="value"
+								placeholder="Preferred language"
+								size="large"
+								v-model="signUpFormDataPart1.cultureId"
+								@focus="suppressErrors()"
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'language']"
+										class="fa-lg text-body"
+									/>
+								</template>
+								<el-option
+									class="poppins-light"
+									v-for="item in cultures"
+									:key="item.value"
+									:label="item.label"
+									:value="item.value"
+								/>
+							</el-select>
+						</el-form-item>
+					</div>
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-40" prop="gender">
+							<el-select
+								class="poppins-light"
+								v-model="signUpFormDataPart1.gender"
 								placeholder="Gender"
 								size="large"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -71,13 +146,93 @@
 								/>
 							</el-select>
 						</el-form-item>
+						<el-form-item class="fb-40" prop="dateOfBirth">
+							<el-date-picker
+								v-model="signUpFormDataPart1.dateOfBirth"
+								class="poppins-light"
+								type="date"
+								placeholder="Date of birth"
+								:disabled-date="disableFutureDates"
+								size="large"
+								@focus="suppressErrors()"
+							/>
+						</el-form-item>
+						<el-form-item class="fb-20">
+							<el-button
+								class="w-100"
+								type="primary"
+								plain
+								size="large"
+								@click="goToStep(SignUpSteps.SECOND)"
+							>
+								NEXT
+							</el-button>
+						</el-form-item>
 					</div>
+				</el-form>
+				<el-form
+					v-if="activeStep === SignUpSteps.SECOND"
+					ref="signUpFormDataPart2Ref"
+					:model="signUpFormDataPart2"
+					:rules="signUpFormDataPart2Rules"
+					class="w-100"
+				>
 					<div class="d-flex gap-3">
-						<el-form-item class="fb-100">
+						<el-form-item class="fb-50" prop="password">
 							<el-input
+								name="password"
+								type="password"
+								v-model="signUpFormDataPart2.password"
+								@keydown="blockEmptyInput"
+								class="poppins-light"
+								size="large"
+								placeholder="Password"
+								show-password
+								clearable
+								:disabled="signingUp"
+								@focus="suppressErrors()"
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'lock']"
+										class="fa-lg text-body"
+									/>
+								</template>
+							</el-input>
+						</el-form-item>
+						<el-form-item class="fb-50" prop="confirmPassword">
+							<el-input
+								name="confirmPassword"
+								v-model="signUpFormDataPart2.confirmPassword"
+								@keydown="blockEmptyInput"
+								type="password"
+								class="poppins-light"
+								size="large"
+								placeholder="Confirm password"
+								clearable
+								:disabled="signingUp"
+								@focus="suppressErrors()"
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'lock']"
+										class="fa-lg text-body"
+									/>
+								</template>
+							</el-input>
+						</el-form-item>
+					</div>
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-100" prop="addressLine1">
+							<el-input
+								name="addressLine1"
+								v-model="signUpFormDataPart2.addressLine1"
+								@keydown="blockEmptyInput"
 								class="poppins-light"
 								placeholder="Address line 1"
 								size="large"
+								:disabled="signingUp"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -88,12 +243,17 @@
 							</el-input>
 						</el-form-item>
 					</div>
-					<div class="d-flex gap-3">
-						<el-form-item class="fb-100">
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-100" prop="addressLine2">
 							<el-input
+								name="addressLine2"
+								v-model="signUpFormDataPart2.addressLine2"
 								class="poppins-light"
 								placeholder="Address line 2"
 								size="large"
+								@keydown="blockEmptyInput"
+								:disabled="signingUp"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -105,50 +265,55 @@
 						</el-form-item>
 					</div>
 					<div class="d-flex gap-3">
-						<el-form-item class="fb-55">
+						<el-form-item class="fb-60" prop="city">
 							<el-input
+								name="city"
+								v-model="signUpFormDataPart2.city"
 								class="poppins-light"
-								placeholder="Phone number"
 								size="large"
+								placeholder="City"
+								@keydown="blockEmptyInput"
+								:disabled="signingUp"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
-										:icon="['fas', 'phone']"
+										:icon="['fas', 'city']"
 										class="fa-lg text-body"
 									/>
 								</template>
 							</el-input>
 						</el-form-item>
-						<el-form-item class="fb-45">
-							<el-select
+						<el-form-item class="fb-40" prop="postalCode">
+							<el-input
+								name="postalCode"
+								v-model="signUpFormDataPart2.postalCode"
+								@keydown="allowOnlyDigits"
 								class="poppins-light"
-								v-model="value"
-								placeholder="Preferred language"
 								size="large"
+								placeholder="Postal code"
+								:disabled="signingUp"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
-										:icon="['fas', 'language']"
+										:icon="['fas', 'envelopes-bulk']"
 										class="fa-lg text-body"
 									/>
 								</template>
-								<el-option
-									class="poppins-light"
-									v-for="item in genders"
-									:key="item.value"
-									:label="item.label"
-									:value="item.value"
-								/>
-							</el-select>
+							</el-input>
 						</el-form-item>
 					</div>
-					<div class="d-flex gap-3">
-						<el-form-item class="fb-35">
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-50" prop="countryId">
 							<el-select
+								name="countryId"
+								v-model="signUpFormDataPart2.countryId"
 								class="poppins-light"
-								v-model="value"
 								placeholder="Country"
 								size="large"
+								:disabled="signingUp"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -158,19 +323,31 @@
 								</template>
 								<el-option
 									class="poppins-light"
-									v-for="item in genders"
-									:key="item.value"
-									:label="item.label"
-									:value="item.value"
-								/>
+									v-for="item in data.countries"
+									:key="item.id"
+									:label="item.name"
+									:value="item.id"
+								>
+									<template #default>
+										<img
+											:src="`https://flagcdn.com/24x18/${item.iso2.toLowerCase()}.png`"
+											alt=""
+											style="margin-right: 8px"
+										/>
+										{{ item.name }}
+									</template>
+								</el-option>
 							</el-select>
 						</el-form-item>
-						<el-form-item class="fb-45">
+						<el-form-item class="fb-50" prop="regionId">
 							<el-select
+								name="regionId"
+								v-model="signUpFormDataPart2.regionId"
 								class="poppins-light"
-								v-model="value"
 								placeholder="Region"
 								size="large"
+								:disabled="!regions || regions.length === 0 || signingUp"
+								@focus="suppressErrors()"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -180,68 +357,540 @@
 								</template>
 								<el-option
 									class="poppins-light"
-									v-for="item in genders"
-									:key="item.value"
-									:label="item.label"
-									:value="item.value"
+									v-for="item in regions"
+									:key="item.id"
+									:label="item.name"
+									:value="item.id"
 								/>
 							</el-select>
 						</el-form-item>
-						<el-form-item class="fb-20">
-							<el-button class="w-100" type="primary" plain size="large"
-								>SIGN UP</el-button
+					</div>
+					<div class="d-flex gap-3 mt-2 align-items-center">
+						<div class="flex-grow-1 text-danger poppins-light">
+							<small v-if="errors.userAlreadyRegistered">
+								Account already exists with this email
+							</small>
+							<small v-else-if="errors.userIsMinor">
+								User must be at least 18 years old
+							</small>
+						</div>
+						<el-form-item class="mb-0">
+							<el-button
+								type="primary"
+								plain
+								size="large"
+								@click="goToStep(SignUpSteps.FIRST)"
+								:disabled="signingUp"
+								>BACK</el-button
 							>
 						</el-form-item>
-					</div>
-					<div class="d-flex align-items-center gap-2">
-						<div class="login-provider">
-							<font-awesome-icon :icon="['fab', 'facebook-f']" class="fa-lg" />
-						</div>
-						<div class="login-provider">
-							<font-awesome-icon :icon="['fab', 'google']" class="fa-lg" />
-						</div>
-						<div class="login-provider">
-							<font-awesome-icon :icon="['fab', 'linkedin-in']" class="fa-lg" />
-						</div>
-						<div class="flex-grow-1"></div>
-						<div>
-							<p class="poppins-light mb-0 text-btn" @click="emit('sign-in')">
-								Already have an account?
-							</p>
-						</div>
+						<el-form-item class="mb-0">
+							<el-button
+								type="primary"
+								plain
+								size="large"
+								@click="!signingUp && signUp()"
+								:loading="signingUp"
+								:disabled="signingUp"
+							>
+								SIGN UP
+							</el-button>
+						</el-form-item>
 					</div>
 				</el-form>
+				<div class="d-flex align-items-center gap-2 mt-3">
+					<div class="login-provider">
+						<font-awesome-icon :icon="['fab', 'facebook-f']" class="fa-lg" />
+					</div>
+					<div class="login-provider">
+						<font-awesome-icon :icon="['fab', 'google']" class="fa-lg" />
+					</div>
+					<div class="login-provider">
+						<font-awesome-icon :icon="['fab', 'linkedin-in']" class="fa-lg" />
+					</div>
+					<div class="flex-grow-1"></div>
+					<div>
+						<p
+							class="poppins-light mb-0 text-btn"
+							@click="!signingUp && emit('sign-in')"
+						>
+							Already have an account ?
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { reactive, ref, defineEmits, toRaw } from "vue";
+import { reactive, ref, defineEmits, defineProps, onMounted, watch } from "vue";
 import { apiRequest } from "../../services/api.js";
 import {
 	HttpMethods,
 	HttpStatus,
 	ErrorCodes,
 	Endpoints,
-	CacheKeys,
+	Genders,
 } from "../../constants.js";
-const emit = defineEmits(["sign-in"]);
 
+const emit = defineEmits(["sign-in"]);
+const props = defineProps({
+	data: {
+		type: Object,
+		required: true,
+	},
+});
+
+const errors = reactive({
+	userAlreadyRegistered: false,
+	userIsMinor: false,
+});
 const genders = [
 	{
-		value: 1,
+		value: Genders.MALE,
 		label: "Male",
 	},
 	{
-		value: 2,
+		value: Genders.FEMALE,
 		label: "Female",
 	},
 	{
-		value: 3,
+		value: Genders.PREFER_NOT_TO_SAY,
 		label: "Prefer not to say",
 	},
 ];
+const SignUpSteps = Object.freeze({
+	FIRST: 1,
+	SECOND: 2,
+});
+
+const validateCulture = (rule, value, callback) => {
+	if (!cultures.value.map((c) => c.value).includes(value)) {
+		callback(new Error("Please select your preferred language"));
+	} else {
+		callback();
+	}
+};
+
+const validateGender = (rule, value, callback) => {
+	if (!Object.values(Genders).includes(value)) {
+		callback(new Error("Please select your gender"));
+	} else {
+		callback();
+	}
+};
+
+const validatePhoneNumber = (rule, value, callback) => {
+	if (value?.length !== 10) {
+		callback(new Error("Phone number should be exactly 10 digits"));
+	} else {
+		callback();
+	}
+};
+
+const validatePassword = (rule, value, callback) => {
+	if (!value) {
+		return callback(new Error("Password is required"));
+	}
+
+	const strongPasswordRegex =
+		/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+	if (!strongPasswordRegex.test(value)) {
+		return callback(new Error("Please specify a strong password"));
+	}
+
+	callback();
+};
+
+const validateConfirmPassword = (rule, value, callback) => {
+	if (!value) {
+		return callback(new Error("Please confirm your password"));
+	}
+
+	if (value !== signUpFormDataPart2.password) {
+		return callback(new Error("Passwords do not match"));
+	}
+
+	callback();
+};
+
+const validatePostalCode = (rule, value, callback) => {
+	if (value?.length !== 6) {
+		callback(new Error("Postal code should be exactly 6 digits"));
+	} else {
+		callback();
+	}
+};
+
+const validateCountry = (rule, value, callback) => {
+	if (!props.data.countries.map((c) => c.id).includes(value)) {
+		callback(new Error("Please select your country"));
+	} else {
+		callback();
+	}
+};
+
+const validateRegion = (rule, value, callback) => {
+	if (
+		typeof value === "undefined" ||
+		!regions ||
+		!regions.value ||
+		!regions.value.map((c) => c.id).includes(value)
+	) {
+		callback(new Error("Please select your region"));
+	} else {
+		callback();
+	}
+};
+
+const signingUp = ref(false);
+const activeStep = ref(SignUpSteps.FIRST);
+const signUpFormDataPart1Ref = ref();
+const signUpFormDataPart2Ref = ref();
+const signUpFormDataPart1Rules = reactive({
+	firstname: [
+		{
+			required: true,
+			message: "Please enter your first name",
+			trigger: ["blur", "change"],
+		},
+	],
+	lastname: [
+		{
+			required: true,
+			message: "Please enter your last name",
+			trigger: ["blur", "change"],
+		},
+	],
+	email: [
+		{
+			required: true,
+			message: "Please enter your email",
+			trigger: ["blur", "change"],
+		},
+		{
+			type: "email",
+			message: "Please enter a valid email",
+			trigger: ["blur", "change"],
+		},
+	],
+	phoneNumber: [
+		{
+			required: true,
+			message: "Please enter your phone number",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validatePhoneNumber,
+			trigger: ["blur", "change"],
+		},
+	],
+	cultureId: [
+		{
+			required: true,
+			message: "Please select your preferred language",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validateCulture,
+			trigger: ["blur", "change"],
+		},
+	],
+	gender: [
+		{
+			required: true,
+			message: "Please select your gender",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validateGender,
+			trigger: ["blur", "change"],
+		},
+	],
+	dateOfBirth: [
+		{
+			required: true,
+			message: "Please select your date of birth",
+			trigger: ["blur", "change"],
+		},
+	],
+});
+const signUpFormDataPart2Rules = reactive({
+	password: [
+		{
+			required: true,
+			message: "Please enter your password",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validatePassword,
+			trigger: ["blur", "change"],
+		},
+	],
+	confirmPassword: [
+		{
+			required: true,
+			message: "Please confirm your password",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validateConfirmPassword,
+			trigger: ["blur", "change"],
+		},
+	],
+	addressLine1: [
+		{
+			required: true,
+			message: "Please enter your address line 1",
+			trigger: ["blur", "change"],
+		},
+	],
+	city: [
+		{
+			required: true,
+			message: "Please enter your city",
+			trigger: ["blur", "change"],
+		},
+	],
+	postalCode: [
+		{
+			required: true,
+			message: "Please enter your postal code",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validatePostalCode,
+			trigger: ["blur", "change"],
+		},
+	],
+	countryId: [
+		{
+			required: true,
+			message: "Please select your country",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validateCountry,
+			trigger: ["blur", "change"],
+		},
+	],
+	regionId: [
+		{
+			required: true,
+			message: "Please select your region",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validateRegion,
+			trigger: ["blur", "change"],
+		},
+	],
+});
+const signUpFormDataPart1 = reactive({
+	firstname: "",
+	lastname: "",
+	email: "",
+	phoneNumber: "",
+	cultureId: null,
+	gender: null,
+	dateOfBirth: null,
+});
+const signUpFormDataPart2 = reactive({
+	password: "",
+	confirmPassword: "",
+	addressLine1: "",
+	addressLine2: "",
+	city: "",
+	postalCode: "",
+	countryId: null,
+	regionId: null,
+});
+const subheadings = [
+	"Keep all your warranties in one place, anytime, anywhere",
+	"Track your purchases effortlessly and stay worry-free",
+	"Never lose a warranty again - it's all in your pocket",
+	"Manage product lifespans with just a few clicks",
+	"Your warranties, your control, always at hand",
+	"Simplify your life - one warranty at a time",
+	"From purchase to protection, we've got you covered",
+	"All your guarantees under one roof, stress-free",
+	"Stay organized, stay secure, stay smart",
+	"Warranty management made simple and seamless",
+];
+const currentSubheading = ref(subheadings[0]);
+const currentIndex = ref(0);
+const fade = ref(true);
+const cultures = ref([]);
+const regions = ref([]);
+
+watch(
+	signUpFormDataPart2,
+	(newValue, oldValue) => {
+		if (newValue.countryId !== null) {
+			if (newValue.countryId !== oldValue.countryId) {
+				signUpFormDataPart2.regionId = null;
+			}
+			regions.value = props.data.countries.find(
+				(c) => c.id === newValue.countryId
+			)?.regions;
+		}
+	},
+	{ deep: true }
+);
+
+const goToStep = async (step) => {
+	try {
+		if (step === SignUpSteps.SECOND) {
+			await signUpFormDataPart1Ref.value.validate();
+		}
+		activeStep.value = step;
+	} catch (error) {
+		return;
+	}
+};
+
+const disableFutureDates = (date) => {
+	return date.getTime() >= Date.now();
+};
+
+const blockEmptyInput = (event) => {
+	const propertyName = event.target.name;
+	if (
+		event.key === " " &&
+		(propertyName === "password" || propertyName === "confirmPassword")
+	) {
+		event.preventDefault();
+	} else if (
+		event.key === " " &&
+		signUpFormDataPart1.hasOwnProperty(propertyName)
+	) {
+		if (signUpFormDataPart1[propertyName].trim().length === 0) {
+			event.preventDefault();
+		}
+	} else if (
+		event.key === " " &&
+		signUpFormDataPart2.hasOwnProperty(propertyName)
+	) {
+		if (signUpFormDataPart2[propertyName].trim().length === 0) {
+			event.preventDefault();
+		}
+	}
+};
+
+const allowOnlyDigits = (event) => {
+	const allowedKeys = [
+		"Backspace",
+		"Delete",
+		"Tab",
+		"ArrowLeft",
+		"ArrowRight",
+		"Home",
+		"End",
+	];
+
+	if (allowedKeys.includes(event.key)) return;
+	if (!/^\d$/.test(event.key)) {
+		event.preventDefault();
+	}
+};
+
+const suppressErrors = () => {
+	errors.userAlreadyRegistered = false;
+	errors.userIsMinor = false;
+};
+
+const signUp = async () => {
+	let formValidationError = true;
+	try {
+		await signUpFormDataPart2Ref.value.validate();
+		formValidationError = false;
+		signingUp.value = true;
+		suppressErrors();
+		const requestBody = {
+			firstname: signUpFormDataPart1.firstname?.trim(),
+			lastname: signUpFormDataPart1.lastname?.trim(),
+			email: signUpFormDataPart1.email?.trim(),
+			phoneNumber: signUpFormDataPart1.phoneNumber?.trim(),
+			cultureId: signUpFormDataPart1.cultureId,
+			gender: signUpFormDataPart1.gender,
+			dateOfBirth: signUpFormDataPart1.dateOfBirth,
+			password: signUpFormDataPart2.password?.trim(),
+			addressLine1: signUpFormDataPart2.addressLine1,
+			addressLine2: signUpFormDataPart2.addressLine2,
+			city: signUpFormDataPart2.city?.trim(),
+			postalCode: signUpFormDataPart2.postalCode?.trim(),
+			countryId: signUpFormDataPart2.countryId,
+			regionId: signUpFormDataPart2.regionId,
+			avatarUrl: "",
+		};
+		const response = await apiRequest(
+			HttpMethods.POST,
+			Endpoints.SIGN_UP,
+			requestBody
+		);
+		if (response.status === HttpStatus.OK) {
+			notifySuccess(
+				"Your account was created successfully. You can now sign in to your account."
+			);
+			emit("sign-in");
+		} else {
+			throw new this.$WebError(
+				"Unexpected error occurred while signing up.",
+				response
+			);
+		}
+	} catch (error) {
+		if (formValidationError) return;
+
+		if (error?.response?.status === HttpStatus.CONFLICT) {
+			if (
+				error.response.data?.error?.code === ErrorCodes.USER_ALREADY_REGISTERED
+			) {
+				errors.userAlreadyRegistered = true;
+				return;
+			}
+		}
+
+		if (error?.response?.status === HttpStatus.BAD_REQUEST) {
+			if (error.response.data?.error?.code === ErrorCodes.USER_IS_MINOR) {
+				errors.userIsMinor = true;
+				return;
+			}
+		}
+
+		notifyError("Oops! something went wrong. Please try again later.");
+		throw error;
+	} finally {
+		signingUp.value = false;
+	}
+};
+
+onMounted(() => {
+	setInterval(() => {
+		fade.value = false;
+		setTimeout(() => {
+			currentIndex.value = (currentIndex.value + 1) % subheadings.length;
+			currentSubheading.value = subheadings[currentIndex.value];
+			fade.value = true;
+		}, 500);
+	}, 4000);
+
+	cultures.value = props.data.countries
+		.filter((c) => c.hasOwnProperty("cultures") && c.cultures?.length > 0)
+		.map((c) => {
+			return c.cultures
+				.map((cul) => {
+					return {
+						value: cul.id,
+						label: `${cul.language.nativeName} (${c.name})`,
+					};
+				})
+				.flatMap((n) => n);
+		})
+		.flatMap((n) => n);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -249,40 +898,18 @@ const genders = [
 	padding: 60px 40px;
 
 	.component-sub-container {
-		.fb-20 {
-			flex-basis: 20%;
+		.fade-text {
+			transition: opacity 0.5s ease-in-out;
+			opacity: 0;
 		}
 
-		.fb-30 {
-			flex-basis: 30%;
+		.fade-text.show {
+			opacity: 1;
 		}
 
-		.fb-35 {
-			flex-basis: 35%;
-		}
-
-		.fb-40 {
-			flex-basis: 40%;
-		}
-
-		.fb-45 {
-			flex-basis: 45%;
-		}
-
-		.fb-50 {
-			flex-basis: 50%;
-		}
-
-		.fb-55 {
-			flex-basis: 55%;
-		}
-
-		.fb-60 {
-			flex-basis: 60%;
-		}
-
-		.fb-100 {
-			flex-basis: 100%;
+		::v-deep(.el-date-editor .el-input__icon) {
+			transform: scale(1.3);
+			color: #000000;
 		}
 
 		.login-providers {

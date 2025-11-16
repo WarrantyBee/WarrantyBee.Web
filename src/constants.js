@@ -1,5 +1,6 @@
 const Endpoints = {
 	ALIVE: "/alive",
+	COUNTRIES: "/countries",
 	SIGN_UP: "/auth/signup",
 	LOGIN: "/auth/login",
 	FORGOT_PASSWORD: "/auth/forgotpassword",
@@ -17,9 +18,10 @@ const HttpMethods = {
 	DELETE: "DELETE",
 };
 
-const LoginTypes = {
-	SIMPLE: "login",
-	MFA: "mfa",
+const Genders = {
+	MALE: 1,
+	FEMALE: 2,
+	PREFER_NOT_TO_SAY: 3,
 };
 
 const NotificationTypes = {
@@ -52,6 +54,8 @@ const HttpStatus = {
 const ErrorCodes = {
 	INVALID_CREDENTIALS: 1002,
 	USER_NOT_REGISTERED: 1016,
+	USER_ALREADY_REGISTERED: 1017,
+	USER_IS_MINOR: 1029,
 	INVALID_OTP: 1034,
 	PASSWORD_RECENTLY_UPDATED: 1049,
 	PASSWORD_ALREADY_USED: 1050,
@@ -65,4 +69,5 @@ export {
 	Events,
 	HttpStatus,
 	ErrorCodes,
+	Genders,
 };

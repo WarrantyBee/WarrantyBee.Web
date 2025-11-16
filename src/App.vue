@@ -1,5 +1,5 @@
 <template>
-	<el-container id="app-container">
+	<el-container id="app-container" v-loading="loading">
 		<el-main class="p-0">
 			<router-view />
 		</el-main>
@@ -9,9 +9,10 @@
 <script setup>
 import { ElNotification } from "element-plus";
 import { loadRecaptcha, getRecaptchaToken } from "./services/recaptcha";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { Events, NotificationTypes } from "./constants";
 
+const loading = ref(false);
 const showSuccessNotification = (message) => {
 	ElNotification({
 		title: "Success",
@@ -43,6 +44,7 @@ const notifyError = (message) => {
 };
 
 onMounted(async () => {
+	loading.value = true;
 	await loadRecaptcha();
 	window.notifySuccess = notifySuccess;
 	window.notifyError = notifyError;
@@ -52,6 +54,7 @@ onMounted(async () => {
 	document.body.addEventListener(Events.ON_ERROR, (e) =>
 		showErrorNotification(e.detail.message)
 	);
+	loading.value = false;
 });
 </script>
 

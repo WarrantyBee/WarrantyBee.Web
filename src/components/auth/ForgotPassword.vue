@@ -20,6 +20,7 @@
 							:disabled="firstTimeSend"
 							@focus="suppressErrors()"
 							clearable
+							@keydown="blockEmptyInput"
 						>
 							<template #prefix>
 								<font-awesome-icon
@@ -75,6 +76,7 @@
 							show-password
 							clearable
 							:disabled="!firstTimeSend || resetting"
+							@keydown="blockEmptyInput"
 						>
 							<template #prefix>
 								<font-awesome-icon
@@ -122,6 +124,7 @@
 							size="large"
 							clearable
 							:disabled="!firstTimeSend || resetting"
+							@keydown="blockEmptyInput"
 						>
 							<template #prefix>
 								<font-awesome-icon
@@ -243,6 +246,12 @@ const validateOtp = (rule, value, callback) => {
 	}
 };
 
+const blockEmptyInput = (event) => {
+	if (event.key === " ") {
+		event.preventDefault();
+	}
+};
+
 const suppressErrors = () => {
 	errors.userNotRegistered = false;
 	errors.invalidOtp = false;
@@ -298,7 +307,7 @@ const sendOtp = async () => {
 		await otpFormRef.value.validate();
 		hasFormValidationError = false;
 		const requestBody = {
-			email: otpFormData.email,
+			email: otpFormData.email?.trim(),
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,
@@ -350,9 +359,9 @@ const resetPassword = async () => {
 		await passwordResetFormRef.value.validate();
 		hasFormValidationError = false;
 		const requestBody = {
-			email: otpFormData.email,
-			otp: passwordResetFormData.otp,
-			newPassword: passwordResetFormData.newPassword,
+			email: otpFormData.email?.trim(),
+			otp: passwordResetFormData.otp?.trim(),
+			newPassword: passwordResetFormData.newPassword?.trim(),
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,
