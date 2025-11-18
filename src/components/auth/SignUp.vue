@@ -60,7 +60,7 @@
 						</el-form-item>
 					</div>
 					<div class="d-flex gap-3 mt-2">
-						<el-form-item class="fb-100" prop="email">
+						<el-form-item class="fb-50" prop="email">
 							<el-input
 								name="email"
 								class="poppins-light"
@@ -78,9 +78,7 @@
 								</template>
 							</el-input>
 						</el-form-item>
-					</div>
-					<div class="d-flex gap-3 mt-2">
-						<el-form-item class="fb-55" prop="phoneNumber">
+						<el-form-item id="phone-number" class="fb-50" prop="phoneNumber">
 							<el-input
 								name="phoneNumber"
 								class="poppins-light"
@@ -90,36 +88,45 @@
 								@keydown="allowOnlyDigits"
 								@focus="suppressErrors()"
 							>
-								<template #prefix>
-									<font-awesome-icon
-										:icon="['fas', 'phone']"
-										class="fa-lg text-body"
-									/>
+								<template #prepend>
+									<el-select
+										v-model="signUpFormDataPart1.phoneCode"
+										class="poppins-light"
+										size="large"
+										style="width: 120px"
+										placeholder="Code"
+									>
+										<template #prefix>
+											<font-awesome-icon
+												:icon="['fas', 'phone']"
+												class="fa-lg text-body"
+											/>
+										</template>
+										<template #label>
+											<!--<img
+												:src="`https://flagcdn.com/24x18/${getCountryIso2ForPhoneCode()}.png`"
+												alt=""
+											/>-->
+											<span>{{ signUpFormDataPart1.phoneCode }}</span>
+										</template>
+										<el-option
+											v-for="item in phoneCodes"
+											:key="item.value"
+											:label="item.name"
+											:value="item.value"
+										>
+											<template #default>
+												<img
+													:src="`https://flagcdn.com/24x18/${item.iso2.toLowerCase()}.png`"
+													alt=""
+													style="margin-right: 8px"
+												/>
+												{{ item.name }} ({{ item.value }})
+											</template>
+										</el-option>
+									</el-select>
 								</template>
 							</el-input>
-						</el-form-item>
-						<el-form-item class="fb-45" prop="cultureId">
-							<el-select
-								class="poppins-light"
-								placeholder="Preferred language"
-								size="large"
-								v-model="signUpFormDataPart1.cultureId"
-								@focus="suppressErrors()"
-							>
-								<template #prefix>
-									<font-awesome-icon
-										:icon="['fas', 'language']"
-										class="fa-lg text-body"
-									/>
-								</template>
-								<el-option
-									class="poppins-light"
-									v-for="item in cultures"
-									:key="item.value"
-									:label="item.label"
-									:value="item.value"
-								/>
-							</el-select>
 						</el-form-item>
 					</div>
 					<div class="d-flex gap-3 mt-2">
@@ -152,7 +159,8 @@
 								class="poppins-light"
 								type="date"
 								placeholder="Date of birth"
-								:disabled-date="disableFutureDates"
+								:disabled-date="disableMinorDoB"
+								:default-value="leastAllowedDoB"
 								size="large"
 								@focus="suppressErrors()"
 							/>
@@ -177,51 +185,6 @@
 					:rules="signUpFormDataPart2Rules"
 					class="w-100"
 				>
-					<div class="d-flex gap-3">
-						<el-form-item class="fb-50" prop="password">
-							<el-input
-								name="password"
-								type="password"
-								v-model="signUpFormDataPart2.password"
-								@keydown="blockEmptyInput"
-								class="poppins-light"
-								size="large"
-								placeholder="Password"
-								show-password
-								clearable
-								:disabled="signingUp"
-								@focus="suppressErrors()"
-							>
-								<template #prefix>
-									<font-awesome-icon
-										:icon="['fas', 'lock']"
-										class="fa-lg text-body"
-									/>
-								</template>
-							</el-input>
-						</el-form-item>
-						<el-form-item class="fb-50" prop="confirmPassword">
-							<el-input
-								name="confirmPassword"
-								v-model="signUpFormDataPart2.confirmPassword"
-								@keydown="blockEmptyInput"
-								type="password"
-								class="poppins-light"
-								size="large"
-								placeholder="Confirm password"
-								clearable
-								:disabled="signingUp"
-								@focus="suppressErrors()"
-							>
-								<template #prefix>
-									<font-awesome-icon
-										:icon="['fas', 'lock']"
-										class="fa-lg text-body"
-									/>
-								</template>
-							</el-input>
-						</el-form-item>
-					</div>
 					<div class="d-flex gap-3 mt-2">
 						<el-form-item class="fb-100" prop="addressLine1">
 							<el-input
@@ -366,12 +329,161 @@
 						</el-form-item>
 					</div>
 					<div class="d-flex gap-3 mt-2 align-items-center">
+						<div class="flex-grow-1"></div>
+						<el-form-item class="mb-0">
+							<el-button
+								type="primary"
+								plain
+								size="large"
+								@click="goToStep(SignUpSteps.FIRST)"
+								>BACK</el-button
+							>
+						</el-form-item>
+						<el-form-item class="mb-0">
+							<el-button
+								type="primary"
+								plain
+								size="large"
+								@click="goToStep(SignUpSteps.THIRD)"
+							>
+								NEXT
+							</el-button>
+						</el-form-item>
+					</div>
+				</el-form>
+				<el-form
+					v-if="activeStep === SignUpSteps.THIRD"
+					ref="signUpFormDataPart3Ref"
+					:model="signUpFormDataPart3"
+					:rules="signUpFormDataPart3Rules"
+					class="w-100"
+				>
+					<div class="d-flex gap-3">
+						<el-form-item class="fb-50" prop="password">
+							<el-input
+								name="password"
+								type="password"
+								v-model="signUpFormDataPart3.password"
+								@keydown="blockEmptyInput"
+								class="poppins-light"
+								size="large"
+								placeholder="Password"
+								show-password
+								clearable
+								:disabled="signingUp"
+								@focus="suppressErrors()"
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'lock']"
+										class="fa-lg text-body"
+									/>
+								</template>
+							</el-input>
+						</el-form-item>
+						<el-form-item class="fb-50" prop="confirmPassword">
+							<el-input
+								name="confirmPassword"
+								v-model="signUpFormDataPart3.confirmPassword"
+								@keydown="blockEmptyInput"
+								type="password"
+								class="poppins-light"
+								size="large"
+								placeholder="Confirm password"
+								clearable
+								:disabled="signingUp"
+								@focus="suppressErrors()"
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'lock']"
+										class="fa-lg text-body"
+									/>
+								</template>
+							</el-input>
+						</el-form-item>
+					</div>
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-45" prop="cultureId">
+							<el-select
+								class="poppins-light"
+								placeholder="Preferred language"
+								size="large"
+								v-model="signUpFormDataPart3.cultureId"
+								@focus="suppressErrors()"
+							>
+								<template #prefix>
+									<font-awesome-icon
+										:icon="['fas', 'language']"
+										class="fa-lg text-body"
+									/>
+								</template>
+								<el-option-group
+									v-for="group in cultures"
+									:key="group.label"
+									:label="group.label"
+								>
+									<el-option
+										class="poppins-light"
+										v-for="item in group.options"
+										:key="item.value"
+										:label="item.label"
+										:value="item.value"
+									/>
+								</el-option-group>
+							</el-select>
+						</el-form-item>
+					</div>
+					<div class="d-flex gap-3 mt-2">
+						<el-form-item class="fb-100 mb-0">
+							<input
+								v-model="signUpFormDataPart3.acceptedPrivacyPolicy"
+								class="compliance-checkbox"
+								type="checkbox"
+								style="transform: scale(1.3)"
+							/>
+							<span class="poppins-light pl-2">
+								&nbsp;&nbsp;&nbsp;&nbsp;I agree to the
+								<b
+									><u
+										@click="
+											(showCompliance = true) &&
+												(activeDocument = ComplianceDocuments.PRIVACY_POLICY)
+										"
+										>Privacy Policy</u
+									></b
+								>
+								and data processing.
+							</span>
+						</el-form-item>
+					</div>
+					<div class="d-flex gap-3">
+						<el-form-item class="fb-100">
+							<input
+								v-model="signUpFormDataPart3.acceptedTnC"
+								class="compliance-checkbox"
+								type="checkbox"
+								style="transform: scale(1.3)"
+							/>
+							<span class="poppins-light pl-2">
+								&nbsp;&nbsp;&nbsp;&nbsp;I agree to the
+								<b>
+									<u
+										@click="
+											(showCompliance = true) &&
+												(activeDocument =
+													ComplianceDocuments.TERMS_AND_CONDITIONS)
+										"
+										>Terms and Conditions</u
+									> </b
+								>.
+							</span>
+						</el-form-item>
+					</div>
+					<div class="d-flex gap-3 mt-2 align-items-center">
 						<div class="flex-grow-1 text-danger poppins-light">
 							<small v-if="errors.userAlreadyRegistered">
 								Account already exists with this email
-							</small>
-							<small v-else-if="errors.userIsMinor">
-								User must be at least 18 years old
 							</small>
 						</div>
 						<el-form-item class="mb-0">
@@ -379,7 +491,7 @@
 								type="primary"
 								plain
 								size="large"
-								@click="goToStep(SignUpSteps.FIRST)"
+								@click="goToStep(SignUpSteps.SECOND)"
 								:disabled="signingUp"
 								>BACK</el-button
 							>
@@ -391,7 +503,11 @@
 								size="large"
 								@click="!signingUp && signUp()"
 								:loading="signingUp"
-								:disabled="signingUp"
+								:disabled="
+									signingUp ||
+									!signUpFormDataPart3.acceptedPrivacyPolicy ||
+									!signUpFormDataPart3.acceptedTnC
+								"
 							>
 								SIGN UP
 							</el-button>
@@ -421,6 +537,19 @@
 			</div>
 		</div>
 	</div>
+	<el-dialog v-model="showCompliance" width="800" :show-close="false">
+		<template #footer>
+			<el-button
+				type="primary"
+				size="large"
+				@click="showCompliance = false"
+				plain
+			>
+				CLOSE
+			</el-button>
+		</template>
+		<iframe :src="activeDocument" class="w-100" style="height: 500px"></iframe>
+	</el-dialog>
 </template>
 
 <script setup>
@@ -433,6 +562,8 @@ import {
 	Endpoints,
 	Genders,
 } from "../../constants.js";
+import { countdownEmits } from "element-plus";
+import { id } from "element-plus/es/locales.mjs";
 
 const emit = defineEmits(["sign-in"]);
 const props = defineProps({
@@ -444,8 +575,8 @@ const props = defineProps({
 
 const errors = reactive({
 	userAlreadyRegistered: false,
-	userIsMinor: false,
 });
+
 const genders = [
 	{
 		value: Genders.MALE,
@@ -460,13 +591,25 @@ const genders = [
 		label: "Prefer not to say",
 	},
 ];
+
 const SignUpSteps = Object.freeze({
 	FIRST: 1,
 	SECOND: 2,
+	THIRD: 3,
 });
 
+const ComplianceDocuments = Object.freeze({
+	NONE: null,
+	TERMS_AND_CONDITIONS:
+		"https://res.cloudinary.com/dovtpmzcw/image/upload/v1763406717/Terms_and_Conditions_fgflp4.pdf",
+	PRIVACY_POLICY:
+		"https://res.cloudinary.com/dovtpmzcw/image/upload/v1763406716/Privacy_Policy_om6vtq.pdf",
+});
+
+const activeDocument = ref(ComplianceDocuments.NONE);
+
 const validateCulture = (rule, value, callback) => {
-	if (!cultures.value.map((c) => c.value).includes(value)) {
+	if (signUpFormDataPart3.cultureId === null) {
 		callback(new Error("Please select your preferred language"));
 	} else {
 		callback();
@@ -482,7 +625,9 @@ const validateGender = (rule, value, callback) => {
 };
 
 const validatePhoneNumber = (rule, value, callback) => {
-	if (value?.length !== 10) {
+	if (signUpFormDataPart1.phoneCode === null) {
+		callback(new Error("Please select your country code"));
+	} else if (value?.length !== 10) {
 		callback(new Error("Phone number should be exactly 10 digits"));
 	} else {
 		callback();
@@ -509,7 +654,7 @@ const validateConfirmPassword = (rule, value, callback) => {
 		return callback(new Error("Please confirm your password"));
 	}
 
-	if (value !== signUpFormDataPart2.password) {
+	if (value !== signUpFormDataPart3.password) {
 		return callback(new Error("Passwords do not match"));
 	}
 
@@ -545,10 +690,33 @@ const validateRegion = (rule, value, callback) => {
 	}
 };
 
+const subheadings = [
+	"Keep all your warranties in one place, anytime, anywhere",
+	"Track your purchases effortlessly and stay worry-free",
+	"Never lose a warranty again - it's all in your pocket",
+	"Manage product lifespans with just a few clicks",
+	"Your warranties, your control, always at hand",
+	"Simplify your life - one warranty at a time",
+	"From purchase to protection, we've got you covered",
+	"All your guarantees under one roof, stress-free",
+	"Stay organized, stay secure, stay smart",
+	"Warranty management made simple and seamless",
+];
+
+const currentSubheading = ref(subheadings[0]);
+const currentIndex = ref(0);
+const fade = ref(true);
+const cultures = ref([]);
+const regions = ref([]);
+const phoneCodes = ref([]);
 const signingUp = ref(false);
+const showCompliance = ref(false);
 const activeStep = ref(SignUpSteps.FIRST);
+
 const signUpFormDataPart1Ref = ref();
 const signUpFormDataPart2Ref = ref();
+const signUpFormDataPart3Ref = ref();
+
 const signUpFormDataPart1Rules = reactive({
 	firstname: [
 		{
@@ -587,17 +755,6 @@ const signUpFormDataPart1Rules = reactive({
 			trigger: ["blur", "change"],
 		},
 	],
-	cultureId: [
-		{
-			required: true,
-			message: "Please select your preferred language",
-			trigger: ["blur", "change"],
-		},
-		{
-			validator: validateCulture,
-			trigger: ["blur", "change"],
-		},
-	],
 	gender: [
 		{
 			required: true,
@@ -617,29 +774,8 @@ const signUpFormDataPart1Rules = reactive({
 		},
 	],
 });
+
 const signUpFormDataPart2Rules = reactive({
-	password: [
-		{
-			required: true,
-			message: "Please enter your password",
-			trigger: ["blur", "change"],
-		},
-		{
-			validator: validatePassword,
-			trigger: ["blur", "change"],
-		},
-	],
-	confirmPassword: [
-		{
-			required: true,
-			message: "Please confirm your password",
-			trigger: ["blur", "change"],
-		},
-		{
-			validator: validateConfirmPassword,
-			trigger: ["blur", "change"],
-		},
-	],
 	addressLine1: [
 		{
 			required: true,
@@ -688,18 +824,54 @@ const signUpFormDataPart2Rules = reactive({
 		},
 	],
 });
+
+const signUpFormDataPart3Rules = reactive({
+	password: [
+		{
+			required: true,
+			message: "Please enter your password",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validatePassword,
+			trigger: ["blur", "change"],
+		},
+	],
+	confirmPassword: [
+		{
+			required: true,
+			message: "Please confirm your password",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validateConfirmPassword,
+			trigger: ["blur", "change"],
+		},
+	],
+	cultureId: [
+		{
+			required: true,
+			message: "Please select your preferred language",
+			trigger: ["blur", "change"],
+		},
+		{
+			validator: validateCulture,
+			trigger: ["blur", "change"],
+		},
+	],
+});
+
 const signUpFormDataPart1 = reactive({
 	firstname: "",
 	lastname: "",
 	email: "",
+	phoneCode: null,
 	phoneNumber: "",
-	cultureId: null,
 	gender: null,
 	dateOfBirth: null,
 });
+
 const signUpFormDataPart2 = reactive({
-	password: "",
-	confirmPassword: "",
 	addressLine1: "",
 	addressLine2: "",
 	city: "",
@@ -707,31 +879,64 @@ const signUpFormDataPart2 = reactive({
 	countryId: null,
 	regionId: null,
 });
-const subheadings = [
-	"Keep all your warranties in one place, anytime, anywhere",
-	"Track your purchases effortlessly and stay worry-free",
-	"Never lose a warranty again - it's all in your pocket",
-	"Manage product lifespans with just a few clicks",
-	"Your warranties, your control, always at hand",
-	"Simplify your life - one warranty at a time",
-	"From purchase to protection, we've got you covered",
-	"All your guarantees under one roof, stress-free",
-	"Stay organized, stay secure, stay smart",
-	"Warranty management made simple and seamless",
-];
-const currentSubheading = ref(subheadings[0]);
-const currentIndex = ref(0);
-const fade = ref(true);
-const cultures = ref([]);
-const regions = ref([]);
+
+const signUpFormDataPart3 = reactive({
+	password: "",
+	confirmPassword: "",
+	cultureId: null,
+	acceptedTnC: false,
+	acceptedPrivacyPolicy: false,
+});
 
 watch(
 	signUpFormDataPart2,
 	(newValue, oldValue) => {
 		if (newValue.countryId !== null) {
+			const availableCultures =
+				cultures.value.length > 1
+					? cultures.value.flatMap((cul) => cul.options)
+					: cultures.value[0].options;
+
+			let recommendedCultures = availableCultures.filter(
+				(cul) => cul.countryId === newValue.countryId
+			);
+
+			if (recommendedCultures.length === 0) {
+				recommendedCultures = availableCultures.filter((cul) =>
+					["en-US", "es-ES", "de-DE"].includes(cul.iso)
+				);
+			}
+
+			if (cultures.value.length > 1) {
+				cultures.value[0].options.forEach((cul) => {
+					if (!recommendedCultures.includes(cul)) {
+						cultures.value[1].options.push(cul);
+					}
+				});
+
+				cultures.value[1].options = cultures.value[1].options.filter(
+					(cul) => !recommendedCultures.includes(cul)
+				);
+
+				cultures.value[0] = {
+					label: "Recommended",
+					options: recommendedCultures,
+				};
+			} else {
+				cultures.value[0].options = cultures.value[0].options.filter(
+					(cul) => !recommendedCultures.includes(cul)
+				);
+
+				cultures.value.unshift({
+					label: "Recommended",
+					options: recommendedCultures,
+				});
+			}
+
 			if (newValue.countryId !== oldValue.countryId) {
 				signUpFormDataPart2.regionId = null;
 			}
+
 			regions.value = props.data.countries.find(
 				(c) => c.id === newValue.countryId
 			)?.regions;
@@ -742,18 +947,31 @@ watch(
 
 const goToStep = async (step) => {
 	try {
-		if (step === SignUpSteps.SECOND) {
+		if (activeStep.value === SignUpSteps.FIRST && step === SignUpSteps.SECOND) {
 			await signUpFormDataPart1Ref.value.validate();
+		}
+		if (activeStep.value === SignUpSteps.SECOND && step === SignUpSteps.THIRD) {
+			await signUpFormDataPart2Ref.value.validate();
 		}
 		activeStep.value = step;
 	} catch (error) {
-		return;
+		throw error;
 	}
 };
 
-const disableFutureDates = (date) => {
-	return date.getTime() >= Date.now();
+const disableMinorDoB = (time) => {
+	const todayMinus18 = new Date();
+	todayMinus18.setFullYear(todayMinus18.getFullYear() - 18);
+	return time.getTime() > todayMinus18.getTime();
 };
+
+const getLeastAllowedDoB = () => {
+	const date = new Date();
+	date.setFullYear(date.getFullYear() - 18);
+	return date;
+};
+
+const leastAllowedDoB = getLeastAllowedDoB();
 
 const blockEmptyInput = (event) => {
 	const propertyName = event.target.name;
@@ -798,13 +1016,17 @@ const allowOnlyDigits = (event) => {
 
 const suppressErrors = () => {
 	errors.userAlreadyRegistered = false;
-	errors.userIsMinor = false;
 };
 
 const signUp = async () => {
+	if (
+		!signUpFormDataPart3.acceptedPrivacyPolicy ||
+		!signUpFormDataPart3.acceptedTnC
+	)
+		return;
 	let formValidationError = true;
 	try {
-		await signUpFormDataPart2Ref.value.validate();
+		await signUpFormDataPart3Ref.value.validate();
 		formValidationError = false;
 		signingUp.value = true;
 		suppressErrors();
@@ -813,17 +1035,20 @@ const signUp = async () => {
 			lastname: signUpFormDataPart1.lastname?.trim(),
 			email: signUpFormDataPart1.email?.trim(),
 			phoneNumber: signUpFormDataPart1.phoneNumber?.trim(),
-			cultureId: signUpFormDataPart1.cultureId,
+			cultureId: signUpFormDataPart3.cultureId,
 			gender: signUpFormDataPart1.gender,
 			dateOfBirth: signUpFormDataPart1.dateOfBirth,
-			password: signUpFormDataPart2.password?.trim(),
-			addressLine1: signUpFormDataPart2.addressLine1,
-			addressLine2: signUpFormDataPart2.addressLine2,
+			password: signUpFormDataPart3.password?.trim(),
+			addressLine1: signUpFormDataPart2.addressLine1?.trim(),
+			addressLine2: signUpFormDataPart2.addressLine2?.trim(),
 			city: signUpFormDataPart2.city?.trim(),
 			postalCode: signUpFormDataPart2.postalCode?.trim(),
 			countryId: signUpFormDataPart2.countryId,
 			regionId: signUpFormDataPart2.regionId,
 			avatarUrl: "",
+			phoneCode: signUpFormDataPart1.phoneCode?.trim(),
+			hasAcceptedTermsAndConditions: signUpFormDataPart3.acceptedTnC,
+			hasAcceptedPrivacyPolicy: signUpFormDataPart3.acceptedPrivacyPolicy,
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,
@@ -853,13 +1078,6 @@ const signUp = async () => {
 			}
 		}
 
-		if (error?.response?.status === HttpStatus.BAD_REQUEST) {
-			if (error.response.data?.error?.code === ErrorCodes.USER_IS_MINOR) {
-				errors.userIsMinor = true;
-				return;
-			}
-		}
-
 		notifyError("Oops! something went wrong. Please try again later.");
 		throw error;
 	} finally {
@@ -885,9 +1103,44 @@ onMounted(() => {
 					return {
 						value: cul.id,
 						label: `${cul.language.nativeName} (${c.name})`,
+						iso: cul.iso,
+						countryId: c.id,
 					};
 				})
 				.flatMap((n) => n);
+		})
+		.flatMap((n) => n);
+
+	let cultureCount = 0;
+	cultures.value = [
+		{
+			label: "Others",
+			options: cultures.value.map((cul) => {
+				return {
+					index: cultureCount++,
+					...cul,
+				};
+			}),
+		},
+	];
+
+	phoneCodes.value = props.data.countries
+		.map((c) => {
+			if (c.phoneCode?.includes(",")) {
+				return c.phoneCode.split(",").map((code) => {
+					return {
+						name: c.name,
+						iso2: c.iso2,
+						value: code,
+					};
+				});
+			} else {
+				return {
+					name: c.name,
+					iso2: c.iso2,
+					value: c.phoneCode,
+				};
+			}
 		})
 		.flatMap((n) => n);
 });
@@ -912,24 +1165,8 @@ onMounted(() => {
 			color: #000000;
 		}
 
-		.login-providers {
-			div.icon {
-				padding: 10px;
-				border-radius: 50%;
-				border: 0.5px solid;
-			}
-
-			div.icon:hover {
-				cursor: pointer;
-				background-color: #000000;
-				color: #ffffff;
-			}
-		}
-
-		.custom-label p {
-			margin-bottom: 0px;
-			margin-top: 12px;
-			font-size: 14px;
+		::v-deep(#phone-number .el-input-group__prepend) {
+			background-color: #ffffff;
 		}
 
 		.login-provider {
@@ -949,6 +1186,16 @@ onMounted(() => {
 			font-size: 14px;
 			text-decoration: underline;
 			text-underline-offset: 10px;
+		}
+
+		.compliance-checkbox {
+			cursor: pointer;
+		}
+
+		.compliance-checkbox + span {
+			u {
+				cursor: pointer;
+			}
 		}
 	}
 }
