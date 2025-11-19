@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
 		plugins: [vue()],
 
 		build: {
-			sourcemap: isDebug, // Enable only in debug mode
+			sourcemap: isDebug,
 
 			rollupOptions: {
 				output: {
