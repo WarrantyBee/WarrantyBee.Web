@@ -57,6 +57,10 @@ body > * {
 	flex-basis: 60%;
 }
 
+.fb-80 {
+	flex-basis: 80%;
+}
+
 .fb-100 {
 	flex-basis: 100%;
 }
