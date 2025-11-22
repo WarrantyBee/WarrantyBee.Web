@@ -12,11 +12,61 @@ on:
           - stage
           - develop
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.branch == 'main' && 'Prod' || (github.event.inputs.branch == 'stage' && 'Stage' || 'Test') }}
+
     steps:
+      - name: Prepare Start Notification Body
+        id: prep_start_email
+        run: |
+          cat <<EOF > template_start.html
+          ${{ vars.PRE_DEPLOYMENT_NOTIFICATION_EMAIL_TEMPLATE }}
+          EOF
+
+          body=$(sed -e 's|{{REPO_NAME}}|${{ github.repository }}|g' \
+              -e 's|{{ENV_NAME}}|${{ github.event.inputs.branch }}|g' \
+              -e 's|{{BRANCH}}|${{ github.event.inputs.branch }}|g' \
+              -e 's|{{COMMIT_SHA}}|${{ github.sha }}|g' \
+              -e 's|{{TRIGGERED_BY}}|${{ github.actor }}|g' \
+              -e "s|{{TRIGGERED_AT}}|$(date -u +"%Y-%m-%dT%H:%M:%SZ")|g" \
+              -e 's|{{WORKFLOW_ID}}|${{ github.run_id }}|g' \
+              -e "s|{{WORKFLOW_URL}}|${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|g" \
+              template_start.html)
+
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Debug Start Email Body
+        run: |
+          echo "----- START EMAIL HTML BODY START -----"
+          echo "${{ steps.prep_start_email.outputs.body }}"
+          echo "----- START EMAIL HTML BODY END -----"
+
+      - name: Prepare Start Notification Subject
+        id: prep_start_subject
+        run: |
+          subject='${{ vars.PRE_DEPLOYMENT_NOTIFICATION_EMAIL_SUBJECT }}'
+          subject="${subject//'{{ENV_NAME}}'/'${{ github.event.inputs.branch }}'}"
+          echo "value=$subject" >> $GITHUB_OUTPUT
+
+      - name: Send Deployment Start Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 465
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PWD }}
+          subject: ${{ steps.prep_start_subject.outputs.value }}
+          to: ${{ secrets.AUDIENCE_ON_DEPLOY }}
+          from: ${{ secrets.SMTP_USER }}
+          html_body: ${{ steps.prep_start_email.outputs.body }}
+
       - name: Checkout selected branch
         uses: actions/checkout@v4
         with:
@@ -58,3 +108,71 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: Set Deployment Status
+        id: set_status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "status=SUCCEEDED" >> $GITHUB_OUTPUT
+            echo "color=#28a745" >> $GITHUB_OUTPUT
+            echo "result=Success" >> $GITHUB_OUTPUT
+          else
+            echo "status=FAILED" >> $GITHUB_OUTPUT
+            echo "color=#dc3545" >> $GITHUB_OUTPUT
+            echo "result=Failure" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare End Notification Body
+        id: prep_end_email
+        if: always()
+        run: |
+          cat <<EOF > template_end.html
+          ${{ vars.POST_DEPLOYMENT_NOTIFICATION_EMAIL_TEMPLATE }}
+          EOF
+
+          body=$(sed -e "s|{{DEPLOY_COLOR}}|${{ steps.set_status.outputs.color }}|g" \
+              -e "s|{{DEPLOY_STATUS}}|${{ steps.set_status.outputs.status }}|g" \
+              -e "s|{{DEPLOY_RESULT}}|${{ steps.set_status.outputs.result }}|g" \
+              -e 's|{{REPO_NAME}}|${{ github.repository }}|g' \
+              -e 's|{{ENV_NAME}}|${{ github.event.inputs.branch }}|g' \
+              -e 's|{{BRANCH}}|${{ github.event.inputs.branch }}|g' \
+              -e 's|{{COMMIT_SHA}}|${{ github.sha }}|g' \
+              -e 's|{{TRIGGERED_BY}}|${{ github.actor }}|g' \
+              -e "s|{{TRIGGERED_AT}}|$(date -u +"%Y-%m-%dT%H:%M:%SZ")|g" \
+              -e 's|{{WORKFLOW_ID}}|${{ github.run_id }}|g' \
+              -e "s|{{WORKFLOW_URL}}|${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|g" \
+              template_end.html)
+
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Debug End Email Body
+        if: always()
+        run: |
+          echo "----- END EMAIL HTML BODY START -----"
+          echo "${{ steps.prep_end_email.outputs.body }}"
+          echo "----- END EMAIL HTML BODY END -----"
+
+      - name: Prepare End Notification Subject
+        id: prep_end_subject
+        if: always()
+        run: |
+          subject='${{ vars.POST_DEPLOYMENT_NOTIFICATION_EMAIL_SUBJECT }}'
+          subject="${subject//'{{ENV_NAME}}'/'${{ github.event.inputs.branch }}'}"
+          subject="${subject//'{{STATUS}}'/'${{ steps.set_status.outputs.status }}'}"
+          echo "value=$subject" >> $GITHUB_OUTPUT
+
+      - name: Send Deployment End Notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 465
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PWD }}
+          subject: ${{ steps.prep_end_subject.outputs.value }}
+          to: ${{ secrets.AUDIENCE_ON_DEPLOY }}
+          from: ${{ secrets.SMTP_USER }}
+          html_body: ${{ steps.prep_end_email.outputs.body }}
