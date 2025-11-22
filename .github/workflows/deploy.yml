@@ -15,6 +15,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.branch == 'main' && 'Prod' || (github.event.inputs.branch == 'stage' && 'Stage' || 'Test') }}
     steps:
       - name: Checkout selected branch
         uses: actions/checkout@v4
@@ -42,15 +43,18 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
       - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
-        with:
-          # Production deploy for main branch
-          prod: ${{ github.event.inputs.branch == 'main' }}
-          # Deploy preview with an alias for develop (test) and stage branches
-          alias: ${{ github.event.inputs.branch == 'develop' && 'test' || (github.event.inputs.branch == 'stage' && 'stage') }}
-          # The directory with the build artifacts, which is 'dist' for Vite
-          dir: dist
+        run: |
+          if [ "${{ github.event.inputs.branch }}" = "main" ]; then
+            netlify deploy --prod --dir=dist --message "Deploy from main branch"
+          elif [ "${{ github.event.inputs.branch }}" = "stage" ]; then
+            netlify deploy --alias=stage --dir=dist --message "Deploy from stage branch"
+          elif [ "${{ github.event.inputs.branch }}" = "develop" ]; then
+            netlify deploy --alias=test --dir=dist --message "Deploy from develop branch"
+          fi
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
