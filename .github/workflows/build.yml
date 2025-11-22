@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  pull_request:
+    branches: ["main", "develop", "stage"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "VITE_RECAPTCHA_SITE_KEY=mock_recaptcha_site_key" > .env
+          echo "VITE_API_BASE_URL=https://api.example.com" >> .env
+          echo "VITE_API_TIMEOUT=5000" >> .env
+          echo "VITE_BETTERSTACK_SOURCE_URL=https://betterstack.example.com" >> .env
+          echo "VITE_BETTERSTACK_ACCESS_TOKEN=mock_betterstack_access_token" >> .env
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.5"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
