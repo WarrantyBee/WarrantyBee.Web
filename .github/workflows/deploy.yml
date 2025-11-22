@@ -1,0 +1,56 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Source branch"
+        required: true
+        type: choice
+        options:
+          - main
+          - stage
+          - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.5"
+          cache: "npm"
+
+      - name: Create .env file from secrets
+        run: |
+          echo "VITE_RECAPTCHA_SITE_KEY=${{ secrets.VITE_RECAPTCHA_SITE_KEY }}" > .env
+          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" >> .env
+          echo "VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}" >> .env
+          echo "VITE_BETTERSTACK_SOURCE_URL=${{ secrets.VITE_BETTERSTACK_SOURCE_URL }}" >> .env
+          echo "VITE_BETTERSTACK_ACCESS_TOKEN=${{ secrets.VITE_BETTERSTACK_ACCESS_TOKEN }}" >> .env
+        shell: bash
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        with:
+          # Production deploy for main branch
+          prod: ${{ github.event.inputs.branch == 'main' }}
+          # Deploy preview with an alias for develop (test) and stage branches
+          alias: ${{ github.event.inputs.branch == 'develop' && 'test' || (github.event.inputs.branch == 'stage' && 'stage') }}
+          # The directory with the build artifacts, which is 'dist' for Vite
+          dir: dist
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
