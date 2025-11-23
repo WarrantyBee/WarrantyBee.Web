@@ -37,8 +37,10 @@ import SignIn from "../components/auth/SignIn.vue";
 import MFAChallenge from "../components/auth/MFAChallenge.vue";
 import ForgotPassword from "../components/auth/ForgotPassword.vue";
 import { apiRequest } from "../services/api";
-import { Endpoints, HttpMethods, HttpStatus } from "../constants";
+import { Endpoints, HttpMethods, HttpStatus, MenuItems } from "../constants";
+import { useGlobalStore } from "../stores/global";
 
+const globalStore = useGlobalStore();
 const router = useRouter();
 const loading = ref(false);
 const signUpFormData = reactive({});
@@ -62,6 +64,7 @@ const redirectToMfaFlow = (data) => {
 };
 
 const redirectToDashboard = () => {
+	globalStore.setSelectedMenu(MenuItems.DASHBOARD);
 	router.push("/dashboard");
 };
 

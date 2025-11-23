@@ -11,6 +11,14 @@ const CacheKeys = {
 	ACCESS_TOKEN: "_WARRANTYBEE_API_ACCESS_TOKEN",
 };
 
+const MenuItems = {
+	DASHBOARD: "1",
+	PRODUCTS: "2",
+	WARRANTIES: "3",
+	MY_PROFILE: "4-1",
+	SIGN_OUT: "4-2",
+};
+
 const HttpMethods = {
 	GET: "GET",
 	POST: "POST",
@@ -69,4 +77,5 @@ export {
 	HttpStatus,
 	ErrorCodes,
 	Genders,
+	MenuItems,
 };
