@@ -29,6 +29,10 @@ body > * {
 	flex-basis: 20%;
 }
 
+.fb-25 {
+	flex-basis: 25%;
+}
+
 .fb-30 {
 	flex-basis: 30%;
 }

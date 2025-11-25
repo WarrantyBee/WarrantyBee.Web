@@ -15,6 +15,7 @@ export const useGlobalStore = defineStore("global", {
 		getUser: (state) => state.user,
 		getUserFullName: (state) =>
 			`${state.user?.firstname || ""} ${state.user?.lastname || ""}`.trim(),
+		getUserEmail: (state) => state.user?.email || "",
 		getAvatarUrl: (state) =>
 			state.user?.profile?.avatarUrl ||
 			(state.user?.profile?.gender === Genders.FEMALE
