@@ -5,6 +5,8 @@ const Endpoints = {
 	LOGIN: "/auth/login",
 	FORGOT_PASSWORD: "/auth/forgotpassword",
 	RESET_PASSWORD: "/auth/resetpassword",
+	CHANGE_PROFILE_PICTURE: (userId) =>
+		"/users/{0}/changeavatar".replace("{0}", `${userId}`),
 };
 
 const CacheKeys = {

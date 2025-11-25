@@ -68,3 +68,59 @@ body > * {
 .fb-100 {
 	flex-basis: 100%;
 }
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.spin {
+	--spin-duration: 1s;
+	--spin-timing: linear;
+	display: inline-block;
+	animation-name: spin;
+	animation-duration: var(--spin-duration);
+	animation-timing-function: var(--spin-timing);
+	animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-fill-mode: both;
+	animation-play-state: running;
+	will-change: transform;
+}
+
+.spin-slow {
+	--spin-duration: 3s;
+}
+.spin-fast {
+	--spin-duration: 0.5s;
+}
+.spin-xtreme {
+	--spin-duration: 0.25s;
+}
+.spin-once {
+	animation-iteration-count: 1;
+	animation-fill-mode: forwards;
+}
+.spin-reverse {
+	animation-direction: reverse;
+}
+
+.spin-paused {
+	animation-play-state: paused;
+}
+.spin-hover-pause:hover {
+	animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spin,
+	.spin-slow,
+	.spin-fast,
+	.spin-xtreme,
+	.spin-once,
+	.spin-reverse {
+		animation: none !important;
+		transition: none !important;
+	}
+}

@@ -41,5 +41,10 @@ export const useGlobalStore = defineStore("global", {
 		setSelectedMenu(menu) {
 			this.selectedMenu = menu;
 		},
+		setAvatarUrl(avatarUrl) {
+			if (this.user && this.user.profile) {
+				this.user.profile.avatarUrl = avatarUrl;
+			}
+		},
 	},
 });

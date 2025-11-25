@@ -10,8 +10,16 @@
 							<div class="d-flex">
 								<img :src="globalStore.getAvatarUrl" class="profile-picture" />
 								<font-awesome-icon
-									:icon="['fas', 'camera']"
+									:icon="['fas', uploading ? 'rotate' : 'camera']"
 									class="profile-picture-edit fa-lg"
+									:class="{ spin: uploading }"
+									@click="!uploading && selectProfilePicture()"
+								/>
+								<input
+									class="d-none upload-profile-picture"
+									type="file"
+									accept="image/*"
+									@change="uploadProfilePicture($event)"
 								/>
 							</div>
 							<div class="d-flex flex-column">
@@ -188,14 +196,54 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import MenuBar from "../components/MenuBar.vue";
 import { useGlobalStore } from "../stores/global";
-import { storeToRefs } from "pinia";
+import { apiRequest } from "../services/api";
+import { Endpoints, HttpMethods } from "../constants";
 
 const globalStore = useGlobalStore();
 const inEditMode = ref(false);
-const { user } = storeToRefs(globalStore);
+const user = computed(() => globalStore.getUser);
+const uploading = ref(false);
+
+const selectProfilePicture = () => {
+	const fileInput = document.querySelector(".upload-profile-picture");
+	fileInput.click();
+};
+
+const uploadProfilePicture = async (event) => {
+	try {
+		uploading.value = true;
+		const files = event.target.files;
+		if (files && files[0]) {
+			const file = files[0];
+			const maxAllowedSizeInBytes = 2 * 1024 * 1024;
+			if (file.size > maxAllowedSizeInBytes) {
+				notifyError("Upload an image smaller than 2 MB.");
+				return;
+			}
+			const formData = new FormData();
+			formData.append("avatar", file);
+			const response = await apiRequest(
+				HttpMethods.POST,
+				Endpoints.CHANGE_PROFILE_PICTURE(user.value.id),
+				formData
+			);
+			if (response.status === 200) {
+				notifySuccess("Profile picture updated successfully.");
+				globalStore.setAvatarUrl(response.data.data);
+			} else {
+				throw new this.$WebError("Unexpected response from server.", response);
+			}
+		}
+	} catch (error) {
+		notifyError("An error occurred while uploading the profile picture.");
+		throw error;
+	} finally {
+		uploading.value = false;
+	}
+};
 </script>
 
 <style lang="scss" scoped>
