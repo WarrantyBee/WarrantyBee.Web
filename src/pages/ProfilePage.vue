@@ -232,7 +232,7 @@ const uploadProfilePicture = async (event) => {
 			);
 			if (response.status === 200) {
 				notifySuccess("Profile picture updated successfully.");
-				globalStore.setAvatarUrl(response.data.data);
+				globalStore.setAvatarUrl(response.data.data.url);
 			} else {
 				throw new this.$WebError("Unexpected response from server.", response);
 			}

@@ -22,9 +22,29 @@ const setAvatarUrl = function (avatarUrl) {
 	}
 };
 
+const setLoader = function (value) {
+	this.loading = value;
+};
+
+const setCountries = function (countries) {
+	this.countries = countries;
+};
+
+const setCultures = function (cultures) {
+	this.cultures = cultures;
+};
+
+const setPhoneCodes = function (phoneCodes) {
+	this.phoneCodes = phoneCodes;
+};
+
 export const actions = {
 	setUser,
 	setAccessToken,
 	setSelectedMenu,
 	setAvatarUrl,
+	setLoader,
+	setCountries,
+	setCultures,
+	setPhoneCodes,
 };

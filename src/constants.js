@@ -5,12 +5,13 @@ const Endpoints = {
 	LOGIN: "/auth/login",
 	FORGOT_PASSWORD: "/auth/forgotpassword",
 	RESET_PASSWORD: "/auth/resetpassword",
+	GET_USER_PROFILE: "/users/profile",
 	CHANGE_PROFILE_PICTURE: (userId) =>
 		"/users/{0}/changeavatar".replace("{0}", `${userId}`),
 };
 
 const CacheKeys = {
-	ACCESS_TOKEN: "_WARRANTYBEE_API_ACCESS_TOKEN",
+	ACCESS_TOKEN: `_WARRANTYBEE_API_ACCESS_TOKEN_${window.location.hostname.toUpperCase()}`,
 };
 
 const MenuItems = {

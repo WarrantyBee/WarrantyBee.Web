@@ -15,14 +15,13 @@ import "./fonts.css";
 import "element-plus/dist/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+library.add(fas, fab);
 const app = createApp(App);
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.use(ElementPlus);
-app.use(router);
-app.use(telemetry);
 app.use(pinia);
+app.use(telemetry);
+app.use(router);
 app.mount("#app");
-
-library.add(fas, fab);
