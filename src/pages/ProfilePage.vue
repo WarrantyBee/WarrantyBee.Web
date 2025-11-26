@@ -198,7 +198,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import MenuBar from "../components/MenuBar.vue";
-import { useGlobalStore } from "../stores/global";
+import { useGlobalStore } from "../stores/global/index.js";
 import { apiRequest } from "../services/api";
 import { Endpoints, HttpMethods } from "../constants";
 

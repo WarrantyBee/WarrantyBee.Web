@@ -128,7 +128,7 @@ import {
 	MenuItems,
 } from "../../constants.js";
 import { useRouter } from "vue-router";
-import { useGlobalStore } from "../../stores/global.js";
+import { useGlobalStore } from "../../stores/global/index.js";
 
 const globalStore = useGlobalStore();
 const router = useRouter();

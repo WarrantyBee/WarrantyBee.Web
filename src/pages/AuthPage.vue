@@ -38,7 +38,7 @@ import MFAChallenge from "../components/auth/MFAChallenge.vue";
 import ForgotPassword from "../components/auth/ForgotPassword.vue";
 import { apiRequest } from "../services/api";
 import { Endpoints, HttpMethods, HttpStatus, MenuItems } from "../constants";
-import { useGlobalStore } from "../stores/global";
+import { useGlobalStore } from "../stores/global/index.js";
 
 const globalStore = useGlobalStore();
 const router = useRouter();
