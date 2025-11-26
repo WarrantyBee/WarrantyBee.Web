@@ -110,10 +110,49 @@
 								<div class="d-flex fb-25">
 									<el-form-item class="w-100" label="Phone Number">
 										<el-input
-											v-model="user.profile.phoneNumber"
+											name="phoneNumber"
+											class="poppins-light"
+											placeholder="Phone number"
 											size="large"
+											v-model="user.profile.phoneNumber"
 											:disabled="!inEditMode"
-										></el-input>
+										>
+											<template #prepend>
+												<el-select
+													v-model="user.profile.phoneCode"
+													class="poppins-light"
+													size="large"
+													style="width: 120px"
+													placeholder="Code"
+													:disabled="!inEditMode"
+												>
+													<template #prefix>
+														<font-awesome-icon
+															:icon="['fas', 'phone']"
+															class="fa-lg text-body"
+														/>
+													</template>
+													<template #label>
+														<span>{{ user.profile.phoneCode }}</span>
+													</template>
+													<el-option
+														v-for="item in globalStore.phoneCodes"
+														:key="item.value"
+														:label="item.name"
+														:value="item.value"
+													>
+														<template #default>
+															<img
+																:src="`https://flagcdn.com/24x18/${item.iso2.toLowerCase()}.png`"
+																alt=""
+																style="margin-right: 8px"
+															/>
+															{{ item.name }} ({{ item.value }})
+														</template>
+													</el-option>
+												</el-select>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 								<div class="d-flex fb-50">
@@ -130,7 +169,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item class="w-100" label="Postal Code">
 										<el-input
-											v-model="user.email"
+											v-model="user.profile.address.postalCode"
 											size="large"
 											disabled
 										></el-input>
@@ -139,7 +178,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item class="w-100" label="City">
 										<el-input
-											v-model="user.profile.phoneNumber"
+											v-model="user.profile.address.city"
 											size="large"
 											:disabled="!inEditMode"
 										></el-input>
@@ -148,20 +187,65 @@
 								<div class="d-flex gap-5 fb-50">
 									<div class="d-flex fb-50">
 										<el-form-item class="w-100" label="Region">
-											<el-input
-												v-model="user.profile.address.addressLine2"
+											<el-select
+												name="regionId"
+												v-model="user.profile.address.region.id"
+												class="poppins-light"
+												placeholder="Region"
 												size="large"
-												:disabled="!inEditMode"
-											></el-input>
+												:disabled="
+													!regions || regions.length === 0 || !inEditMode
+												"
+											>
+												<template #prefix>
+													<font-awesome-icon
+														:icon="['fas', 'location-dot']"
+														class="fa-lg text-body"
+													/>
+												</template>
+												<el-option
+													class="poppins-light"
+													v-for="item in regions"
+													:key="item.id"
+													:label="item.name"
+													:value="item.id"
+												/>
+											</el-select>
 										</el-form-item>
 									</div>
 									<div class="d-flex fb-50">
 										<el-form-item class="w-100" label="Country">
-											<el-input
-												v-model="user.profile.address.addressLine2"
+											<el-select
+												name="countryId"
+												v-model="user.profile.address.country.id"
+												class="poppins-light"
+												placeholder="Country"
 												size="large"
 												:disabled="!inEditMode"
-											></el-input>
+											>
+												<template #prefix>
+													<font-awesome-icon
+														:icon="['fas', 'globe']"
+														class="fa-lg text-body"
+													/>
+												</template>
+												<el-option
+													class="poppins-light"
+													v-for="item in globalStore.countries"
+													:key="item.id"
+													:label="item.name"
+													:value="item.id"
+												>
+													<template #default>
+														<img
+															:src="`https://flagcdn.com/24x18/${item.iso2.toLowerCase()}.png`"
+															alt=""
+															style="margin-right: 8px"
+														/>
+														{{ item.name }}
+													</template>
+												</el-option>
+											</el-select>
 										</el-form-item>
 									</div>
 								</div>
@@ -196,7 +280,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import MenuBar from "../components/MenuBar.vue";
 import { useGlobalStore } from "../stores/global/index.js";
 import { apiRequest } from "../services/api";
@@ -204,8 +288,13 @@ import { Endpoints, HttpMethods } from "../constants";
 
 const globalStore = useGlobalStore();
 const inEditMode = ref(false);
-const user = computed(() => globalStore.getUser);
+const user = ref({ ...globalStore.user });
 const uploading = ref(false);
+const regions = computed(() => {
+	return globalStore.countries.find(
+		(c) => c.id === user.value.profile.address.country.id
+	)?.regions;
+});
 
 const selectProfilePicture = () => {
 	const fileInput = document.querySelector(".upload-profile-picture");

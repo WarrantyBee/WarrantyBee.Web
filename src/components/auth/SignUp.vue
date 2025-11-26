@@ -103,10 +103,6 @@
 											/>
 										</template>
 										<template #label>
-											<!--<img
-												:src="`https://flagcdn.com/24x18/${getCountryIso2ForPhoneCode()}.png`"
-												alt=""
-											/>-->
 											<span>{{ signUpFormDataPart1.phoneCode }}</span>
 										</template>
 										<el-option
