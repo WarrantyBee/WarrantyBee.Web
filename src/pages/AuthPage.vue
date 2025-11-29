@@ -4,7 +4,6 @@
 		<div class="component-section">
 			<SignUp
 				v-if="activeComponent === AuthPageComponents.SIGN_UP"
-				:data="signUpFormData"
 				@sign-in="activeComponent = AuthPageComponents.SIGN_IN"
 			/>
 			<SignIn
@@ -30,18 +29,17 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import SignUp from "../components/auth/SignUp.vue";
 import SignIn from "../components/auth/SignIn.vue";
 import MFAChallenge from "../components/auth/MFAChallenge.vue";
 import ForgotPassword from "../components/auth/ForgotPassword.vue";
-import { apiRequest } from "../services/api";
-import { Endpoints, HttpMethods, HttpStatus } from "../constants";
+import { MenuItems } from "../constants";
+import { useGlobalStore } from "../stores/global/index.js";
 
+const globalStore = useGlobalStore();
 const router = useRouter();
-const loading = ref(false);
-const signUpFormData = reactive({});
 const AuthPageComponents = Object.freeze({
 	SIGN_UP: 1,
 	SIGN_IN: 2,
@@ -62,31 +60,9 @@ const redirectToMfaFlow = (data) => {
 };
 
 const redirectToDashboard = () => {
+	globalStore.setSelectedMenu(MenuItems.DASHBOARD);
 	router.push("/dashboard");
 };
-
-const getCountries = async () => {
-	try {
-		const response = await apiRequest(HttpMethods.GET, Endpoints.COUNTRIES);
-		if (response?.status === HttpStatus.OK) {
-			signUpFormData.countries = response.data.data;
-		} else {
-			throw new this.$WebError("Unexpected response from server.", response);
-		}
-	} catch (error) {
-		notifyError(
-			"Something went wrong. Please refresh the page or try again later."
-		);
-		throw error;
-	} finally {
-		loading.value = false;
-	}
-};
-
-onMounted(async () => {
-	loading.value = true;
-	await getCountries();
-});
 </script>
 
 <style lang="scss" scoped>

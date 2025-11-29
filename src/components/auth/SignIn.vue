@@ -125,9 +125,12 @@ import {
 	ErrorCodes,
 	Endpoints,
 	CacheKeys,
+	MenuItems,
 } from "../../constants.js";
 import { useRouter } from "vue-router";
+import { useGlobalStore } from "../../stores/global/index.js";
 
+const globalStore = useGlobalStore();
 const router = useRouter();
 const emit = defineEmits([
 	"mfa-sign-in",
@@ -213,6 +216,8 @@ const signIn = async () => {
 					});
 				} else if (data?.accessToken) {
 					localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
+					globalStore.setUser(data.user);
+					globalStore.setAccessToken(data.accessToken);
 					emit("sign-in-success");
 				} else {
 					throw new this.$WebError(

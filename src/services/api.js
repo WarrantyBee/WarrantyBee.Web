@@ -6,7 +6,6 @@ const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_API_BASE_URL,
 	timeout: import.meta.env.VITE_API_TIMEOUT,
 	headers: {
-		"Content-Type": "application/json",
 		Authorization: `Bearer ${localStorage.getItem(CacheKeys.ACCESS_TOKEN)}`,
 	},
 });
@@ -33,11 +32,18 @@ apiClient.interceptors.response.use(
 export async function apiRequest(method, url, data = {}, config = {}) {
 	try {
 		let recaptchaToken;
+		const isFormData = data instanceof FormData;
 
-		if (method === HttpMethods.POST || method === HttpMethods.PUT) {
+		if (
+			method === HttpMethods.POST ||
+			method === HttpMethods.PUT ||
+			method === HttpMethods.PATCH
+		) {
 			if (url !== Endpoints.ALIVE) {
 				recaptchaToken = await getRecaptchaToken();
-				if (data) {
+				if (isFormData) {
+					data.append("captchaResponse", recaptchaToken);
+				} else if (data) {
 					data.captchaResponse = recaptchaToken;
 				} else {
 					data = { captchaResponse: recaptchaToken };

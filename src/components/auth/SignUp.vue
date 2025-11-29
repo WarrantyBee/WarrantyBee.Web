@@ -103,10 +103,6 @@
 											/>
 										</template>
 										<template #label>
-											<!--<img
-												:src="`https://flagcdn.com/24x18/${getCountryIso2ForPhoneCode()}.png`"
-												alt=""
-											/>-->
 											<span>{{ signUpFormDataPart1.phoneCode }}</span>
 										</template>
 										<el-option
@@ -286,7 +282,7 @@
 								</template>
 								<el-option
 									class="poppins-light"
-									v-for="item in data.countries"
+									v-for="item in countries"
 									:key="item.id"
 									:label="item.name"
 									:value="item.id"
@@ -553,7 +549,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, defineEmits, defineProps, onMounted, watch } from "vue";
+import { reactive, ref, defineEmits, onMounted, watch, computed } from "vue";
 import { apiRequest } from "../../services/api.js";
 import {
 	HttpMethods,
@@ -562,17 +558,11 @@ import {
 	Endpoints,
 	Genders,
 } from "../../constants.js";
-import { countdownEmits } from "element-plus";
-import { id } from "element-plus/es/locales.mjs";
+import { useGlobalStore } from "../../stores/global/index.js";
 
 const emit = defineEmits(["sign-in"]);
-const props = defineProps({
-	data: {
-		type: Object,
-		required: true,
-	},
-});
 
+const globalStore = useGlobalStore();
 const errors = reactive({
 	userAlreadyRegistered: false,
 });
@@ -670,7 +660,7 @@ const validatePostalCode = (rule, value, callback) => {
 };
 
 const validateCountry = (rule, value, callback) => {
-	if (!props.data.countries.map((c) => c.id).includes(value)) {
+	if (!countries.value.map((c) => c.id).includes(value)) {
 		callback(new Error("Please select your country"));
 	} else {
 		callback();
@@ -706,12 +696,32 @@ const subheadings = [
 const currentSubheading = ref(subheadings[0]);
 const currentIndex = ref(0);
 const fade = ref(true);
-const cultures = ref([]);
+const cultures = computed(() => {
+	let data = globalStore.cultures || [];
+	let cultureCount = 0;
+	data = [
+		{
+			label: "Others",
+			options: data.map((cul) => {
+				return {
+					index: cultureCount++,
+					...cul,
+				};
+			}),
+		},
+	];
+	return data;
+});
 const regions = ref([]);
-const phoneCodes = ref([]);
+const countries = computed(() => {
+	const data = globalStore.countries || [];
+	return data;
+});
+const phoneCodes = computed(() => globalStore.phoneCodes || []);
 const signingUp = ref(false);
 const showCompliance = ref(false);
 const activeStep = ref(SignUpSteps.FIRST);
+const previouslySelectedCountryId = ref(null);
 
 const signUpFormDataPart1Ref = ref();
 const signUpFormDataPart2Ref = ref();
@@ -933,13 +943,18 @@ watch(
 				});
 			}
 
-			if (newValue.countryId !== oldValue.countryId) {
+			if (
+				previouslySelectedCountryId.value !== null &&
+				newValue.countryId !== previouslySelectedCountryId.value
+			) {
 				signUpFormDataPart2.regionId = null;
 			}
 
-			regions.value = props.data.countries.find(
+			regions.value = countries.value.find(
 				(c) => c.id === newValue.countryId
 			)?.regions;
+
+			previouslySelectedCountryId.value = newValue.countryId;
 		}
 	},
 	{ deep: true }
@@ -1094,55 +1109,6 @@ onMounted(() => {
 			fade.value = true;
 		}, 500);
 	}, 4000);
-
-	cultures.value = props.data.countries
-		.filter((c) => c.hasOwnProperty("cultures") && c.cultures?.length > 0)
-		.map((c) => {
-			return c.cultures
-				.map((cul) => {
-					return {
-						value: cul.id,
-						label: `${cul.language.nativeName} (${c.name})`,
-						iso: cul.iso,
-						countryId: c.id,
-					};
-				})
-				.flatMap((n) => n);
-		})
-		.flatMap((n) => n);
-
-	let cultureCount = 0;
-	cultures.value = [
-		{
-			label: "Others",
-			options: cultures.value.map((cul) => {
-				return {
-					index: cultureCount++,
-					...cul,
-				};
-			}),
-		},
-	];
-
-	phoneCodes.value = props.data.countries
-		.map((c) => {
-			if (c.phoneCode?.includes(",")) {
-				return c.phoneCode.split(",").map((code) => {
-					return {
-						name: c.name,
-						iso2: c.iso2,
-						value: code,
-					};
-				});
-			} else {
-				return {
-					name: c.name,
-					iso2: c.iso2,
-					value: c.phoneCode,
-				};
-			}
-		})
-		.flatMap((n) => n);
 });
 </script>
 

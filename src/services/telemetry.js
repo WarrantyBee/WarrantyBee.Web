@@ -18,7 +18,7 @@ function getBrowserContext() {
 	};
 }
 
-class WebError extends Error {
+export class WebError extends Error {
 	constructor(message, info = {}) {
 		super(message);
 		this.name = "WebError";

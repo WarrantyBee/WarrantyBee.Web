@@ -5,10 +5,21 @@ const Endpoints = {
 	LOGIN: "/auth/login",
 	FORGOT_PASSWORD: "/auth/forgotpassword",
 	RESET_PASSWORD: "/auth/resetpassword",
+	GET_USER_PROFILE: "/users/profile",
+	CHANGE_PROFILE_PICTURE: "/users/profile/changeavatar",
+	UPDATE_USER_PROFILE: "/users/profile",
 };
 
 const CacheKeys = {
-	ACCESS_TOKEN: "_WARRANTYBEE_API_ACCESS_TOKEN",
+	ACCESS_TOKEN: `_WARRANTYBEE_API_ACCESS_TOKEN_${window.location.hostname.toUpperCase()}`,
+};
+
+const MenuItems = {
+	DASHBOARD: "1",
+	PRODUCTS: "2",
+	WARRANTIES: "3",
+	MY_PROFILE: "4-1",
+	SIGN_OUT: "4-2",
 };
 
 const HttpMethods = {
@@ -16,6 +27,7 @@ const HttpMethods = {
 	POST: "POST",
 	PUT: "PUT",
 	DELETE: "DELETE",
+	PATCH: "PATCH",
 };
 
 const Genders = {
@@ -69,4 +81,5 @@ export {
 	HttpStatus,
 	ErrorCodes,
 	Genders,
+	MenuItems,
 };

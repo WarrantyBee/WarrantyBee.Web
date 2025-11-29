@@ -9,10 +9,12 @@
 <script setup>
 import { ElNotification } from "element-plus";
 import { loadRecaptcha, getRecaptchaToken } from "./services/recaptcha";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { Events, NotificationTypes } from "./constants";
+import { useGlobalStore } from "./stores/global/index";
 
-const loading = ref(false);
+const globalStore = useGlobalStore();
+const loading = computed(() => globalStore.loading);
 const showSuccessNotification = (message) => {
 	ElNotification({
 		title: "Success",
@@ -44,7 +46,7 @@ const notifyError = (message) => {
 };
 
 onMounted(async () => {
-	loading.value = true;
+	globalStore.setLoader(true);
 	await loadRecaptcha();
 	window.notifySuccess = notifySuccess;
 	window.notifyError = notifyError;
@@ -54,7 +56,7 @@ onMounted(async () => {
 	document.body.addEventListener(Events.ON_ERROR, (e) =>
 		showErrorNotification(e.detail.message)
 	);
-	loading.value = false;
+	globalStore.setLoader(false);
 });
 </script>
 
