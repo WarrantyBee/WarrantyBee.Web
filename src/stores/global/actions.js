@@ -38,6 +38,41 @@ const setPhoneCodes = function (phoneCodes) {
 	this.phoneCodes = phoneCodes;
 };
 
+const setUserProfile = function (profile) {
+	if (profile) {
+		if (profile.hasOwnProperty("phoneCode")) {
+			this.user.profile.phoneCode = profile.phoneCode;
+		}
+		if (profile.hasOwnProperty("phoneNumber")) {
+			this.user.profile.phoneNumber = profile.phoneNumber;
+		}
+		if (profile.hasOwnProperty("avatarUrl")) {
+			this.user.profile.avatarUrl = profile.avatarUrl;
+		}
+		if (profile.hasOwnProperty("addressLine1")) {
+			this.user.profile.address.addressLine1 = profile.addressLine1;
+		}
+		if (profile.hasOwnProperty("addressLine2")) {
+			this.user.profile.address.addressLine2 = profile.addressLine2;
+		}
+		if (profile.hasOwnProperty("city")) {
+			this.user.profile.address.city = profile.city;
+		}
+		if (profile.hasOwnProperty("postalCode")) {
+			this.user.profile.address.postalCode = profile.postalCode;
+		}
+		if (profile.hasOwnProperty("countryId")) {
+			this.user.profile.address.country.id = profile.countryId;
+		}
+		if (profile.hasOwnProperty("regionId")) {
+			this.user.profile.address.region.id = profile.regionId;
+		}
+		if (profile.hasOwnProperty("cultureId")) {
+			this.user.profile.culture.id = profile.cultureId;
+		}
+	}
+};
+
 export const actions = {
 	setUser,
 	setAccessToken,
@@ -47,4 +82,5 @@ export const actions = {
 	setCountries,
 	setCultures,
 	setPhoneCodes,
+	setUserProfile,
 };

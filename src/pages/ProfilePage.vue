@@ -39,7 +39,9 @@
 									class="poppins-light"
 									type="success"
 									size="large"
-									@click="inEditMode = false"
+									@click="saveProfile"
+									:loading="saving"
+									:disabled="saving"
 								>
 									SAVE
 								</el-button>
@@ -48,8 +50,9 @@
 								<el-button
 									class="poppins-light"
 									size="large"
-									@click="inEditMode = false"
+									@click="cancelEdit"
 									plain
+									:disabled="saving"
 								>
 									CANCEL
 								</el-button>
@@ -59,7 +62,7 @@
 									class="poppins-light"
 									type="primary"
 									size="large"
-									@click="inEditMode = true"
+									@click="editProfile"
 								>
 									EDIT
 								</el-button>
@@ -71,12 +74,12 @@
 							v-if="showForm"
 							ref="profileFormRef"
 							:rules="profileFormRules"
-							:model="user"
+							:model="profileForm"
 						>
 							<div class="d-flex gap-5">
 								<div class="d-flex fb-25">
 									<el-form-item
-										class="w-100"
+										class="w-100 poppins-light"
 										label="First Name"
 										prop="firstname"
 									>
@@ -86,23 +89,41 @@
 											size="large"
 											disabled
 											@keydown="blockEmptyInput($event)"
-										></el-input>
+										>
+											<template #prefix>
+												<font-awesome-icon
+													:icon="['fas', 'user']"
+													class="fa-lg text-body disable-mode"
+												/>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 								<div class="d-flex fb-25">
-									<el-form-item class="w-100" label="Last Name" prop="lastname">
+									<el-form-item
+										class="w-100 poppins-light"
+										label="Last Name"
+										prop="lastname"
+									>
 										<el-input
 											name="lastname"
 											v-model="profileForm.lastname"
 											size="large"
 											disabled
 											@keydown="blockEmptyInput($event)"
-										></el-input>
+										>
+											<template #prefix>
+												<font-awesome-icon
+													:icon="['fas', 'user']"
+													class="fa-lg text-body disable-mode"
+												/>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 								<div class="d-flex fb-50">
 									<el-form-item
-										class="w-100"
+										class="w-100 poppins-light"
 										label="Address Line 1"
 										prop="addressLine1"
 									>
@@ -110,27 +131,46 @@
 											name="addressLine1"
 											v-model="profileForm.addressLine1"
 											size="large"
-											:disabled="!inEditMode"
+											:disabled="!inEditMode || saving"
 											@keydown="blockEmptyInput($event)"
-										></el-input>
+										>
+											<template #prefix>
+												<font-awesome-icon
+													:icon="['fas', 'address-book']"
+													class="fa-lg text-body"
+													:class="{ 'disable-mode': !inEditMode || saving }"
+												/>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 							</div>
 							<div class="d-flex gap-5">
 								<div class="d-flex fb-25">
-									<el-form-item class="w-100" label="Email" prop="email">
+									<el-form-item
+										class="w-100 poppins-light"
+										label="Email"
+										prop="email"
+									>
 										<el-input
 											name="email"
 											v-model="profileForm.email"
 											size="large"
 											disabled
 											@keydown="blockEmptyInput($event)"
-										></el-input>
+										>
+											<template #prefix>
+												<font-awesome-icon
+													:icon="['fas', 'envelope']"
+													class="fa-lg text-body disable-mode"
+												/>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 								<div class="d-flex fb-25">
 									<el-form-item
-										class="w-100"
+										class="w-100 poppins-light"
 										label="Phone Number"
 										prop="phoneNumber"
 									>
@@ -140,7 +180,7 @@
 											placeholder="Phone number"
 											size="large"
 											v-model="profileForm.phoneNumber"
-											:disabled="!inEditMode"
+											:disabled="!inEditMode || saving"
 											@keydown="allowOnlyDigits($event)"
 										>
 											<template #prepend>
@@ -161,6 +201,7 @@
 														<font-awesome-icon
 															:icon="['fas', 'phone']"
 															class="fa-lg text-body"
+															:class="{ 'disable-mode': !inEditMode || saving }"
 														/>
 													</template>
 													<template #label>
@@ -188,7 +229,7 @@
 								</div>
 								<div class="d-flex fb-50">
 									<el-form-item
-										class="w-100"
+										class="w-100 poppins-light"
 										label="Address Line 2"
 										prop="addressLine2"
 									>
@@ -196,16 +237,24 @@
 											name="addressLine2"
 											v-model="profileForm.addressLine2"
 											size="large"
-											:disabled="!inEditMode"
+											:disabled="!inEditMode || saving"
 											@keydown="blockEmptyInput($event)"
-										></el-input>
+										>
+											<template #prefix>
+												<font-awesome-icon
+													:icon="['fas', 'address-book']"
+													class="fa-lg text-body"
+													:class="{ 'disable-mode': !inEditMode || saving }"
+												/>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 							</div>
 							<div class="d-flex gap-5">
 								<div class="d-flex fb-25">
 									<el-form-item
-										class="w-100"
+										class="w-100 poppins-light"
 										label="Postal Code"
 										prop="postalCode"
 									>
@@ -213,25 +262,49 @@
 											name="postalCode"
 											v-model="profileForm.postalCode"
 											size="large"
-											:disabled="!inEditMode"
+											:disabled="!inEditMode || saving"
 											@keydown="allowOnlyDigits($event)"
-										></el-input>
+										>
+											<template #prefix>
+												<font-awesome-icon
+													:icon="['fas', 'envelopes-bulk']"
+													class="fa-lg text-body"
+													:class="{ 'disable-mode': !inEditMode || saving }"
+												/>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 								<div class="d-flex fb-25">
-									<el-form-item class="w-100" label="City" prop="city">
+									<el-form-item
+										class="w-100 poppins-light"
+										label="City"
+										prop="city"
+									>
 										<el-input
 											name="city"
 											v-model="profileForm.city"
 											size="large"
-											:disabled="!inEditMode"
+											:disabled="!inEditMode || saving"
 											@keydown="blockEmptyInput($event)"
-										></el-input>
+										>
+											<template #prefix>
+												<font-awesome-icon
+													:icon="['fas', 'city']"
+													class="fa-lg text-body"
+													:class="{ 'disable-mode': !inEditMode || saving }"
+												/>
+											</template>
+										</el-input>
 									</el-form-item>
 								</div>
 								<div class="d-flex gap-5 fb-50">
 									<div class="d-flex fb-50">
-										<el-form-item class="w-100" label="Region" prop="region">
+										<el-form-item
+											class="w-100 poppins-light"
+											label="Region"
+											prop="regionId"
+										>
 											<el-select
 												name="regionId"
 												v-model="profileForm.regionId"
@@ -239,13 +312,17 @@
 												placeholder="Region"
 												size="large"
 												:disabled="
-													!regions || regions.length === 0 || !inEditMode
+													!regions ||
+													regions.length === 0 ||
+													!inEditMode ||
+													saving
 												"
 											>
 												<template #prefix>
 													<font-awesome-icon
 														:icon="['fas', 'location-dot']"
 														class="fa-lg text-body"
+														:class="{ 'disable-mode': !inEditMode || saving }"
 													/>
 												</template>
 												<el-option
@@ -259,19 +336,24 @@
 										</el-form-item>
 									</div>
 									<div class="d-flex fb-50">
-										<el-form-item class="w-100" label="Country" prop="country">
+										<el-form-item
+											class="w-100 poppins-light"
+											label="Country"
+											prop="countryId"
+										>
 											<el-select
 												name="countryId"
 												v-model="profileForm.countryId"
 												class="poppins-light"
 												placeholder="Country"
 												size="large"
-												:disabled="!inEditMode"
+												:disabled="!inEditMode || saving"
 											>
 												<template #prefix>
 													<font-awesome-icon
 														:icon="['fas', 'globe']"
 														class="fa-lg text-body"
+														:class="{ 'disable-mode': !inEditMode || saving }"
 													/>
 												</template>
 												<el-option
@@ -298,7 +380,7 @@
 							<div class="d-flex gap-5">
 								<div class="d-flex fb-25">
 									<el-form-item
-										class="w-100"
+										class="w-100 poppins-light"
 										label="Date Of Birth"
 										prop="dateOfBirth"
 									>
@@ -306,28 +388,33 @@
 											name="dateOfBirth"
 											v-model="profileForm.dateOfBirth"
 											class="poppins-light w-100"
+											:class="{ 'disable-mode': !inEditMode || saving }"
 											type="date"
 											placeholder="Date of birth"
 											size="large"
-											:disabled="!inEditMode"
+											disabled
 											:disabled-date="disableMinorDoB"
 										/>
 									</el-form-item>
 								</div>
 								<div class="d-flex fb-25">
-									<el-form-item class="w-100" label="Gender" prop="gender">
+									<el-form-item
+										class="w-100 poppins-light"
+										label="Gender"
+										prop="gender"
+									>
 										<el-select
 											name="gender"
 											class="poppins-light"
 											v-model="profileForm.gender"
 											placeholder="Gender"
 											size="large"
-											:disabled="!inEditMode"
+											disabled
 										>
 											<template #prefix>
 												<font-awesome-icon
 													:icon="['fas', 'mars-and-venus']"
-													class="fa-lg text-body"
+													class="fa-lg text-body disable-mode"
 												/>
 											</template>
 											<el-option
@@ -343,8 +430,8 @@
 								<div class="d-flex gap-5 fb-50">
 									<div class="d-flex fb-50">
 										<el-form-item
-											class="w-100"
-											prop="culture"
+											class="w-100 poppins-light"
+											prop="cultureId"
 											label="Preferred Language"
 										>
 											<el-select
@@ -353,12 +440,13 @@
 												placeholder="Preferred language"
 												size="large"
 												v-model="profileForm.cultureId"
-												:disabled="!inEditMode"
+												:disabled="!inEditMode || saving"
 											>
 												<template #prefix>
 													<font-awesome-icon
 														:icon="['fas', 'language']"
 														class="fa-lg text-body"
+														:class="{ 'disable-mode': !inEditMode || saving }"
 													/>
 												</template>
 												<el-option-group
@@ -391,15 +479,20 @@
 </template>
 
 <script setup>
-import { computed, ref, reactive, onMounted, watch } from "vue";
+import { computed, ref, reactive, onMounted, watch, toRaw } from "vue";
 import MenuBar from "../components/MenuBar.vue";
 import { useGlobalStore } from "../stores/global/index.js";
 import { apiRequest } from "../services/api";
-import { Endpoints, Genders, HttpMethods } from "../constants";
+import { Endpoints, Genders, HttpMethods, HttpStatus } from "../constants";
+import { hasDifference, getDifference } from "../utils/jsonhelper.js";
 
 const globalStore = useGlobalStore();
 const profileFormRef = ref();
 const inEditMode = ref(false);
+const saving = ref(false);
+const showForm = ref(false);
+const uploading = ref(false);
+const originalProfileForm = reactive({});
 
 const profileForm = reactive({
 	id: null,
@@ -420,29 +513,58 @@ const profileForm = reactive({
 	avatarUrl: null,
 });
 
-const showForm = ref(false);
-const uploading = ref(false);
-
 const regions = computed(() => {
-	return globalStore.countries.find((c) => c.id === profileForm.countryId)
-		?.regions;
+	const data = globalStore.countries.find(
+		(c) => c.id === profileForm.countryId
+	)?.regions;
+	return data || [];
 });
 
+watch(
+	() => profileForm.countryId,
+	(newCountryId, oldCountryId) => {
+		if (
+			inEditMode.value &&
+			newCountryId !== oldCountryId &&
+			oldCountryId !== null
+		) {
+			profileForm.regionId = null;
+		}
+	}
+);
+
 const cultures = computed(() => {
-	let data = globalStore.cultures || [];
-	let cultureCount = 0;
-	data = [
-		{
-			label: "Others",
-			options: data.map((cul) => {
-				return {
-					index: cultureCount++,
-					...cul,
-				};
-			}),
-		},
-	];
-	return data;
+	const allCultures = (globalStore.cultures || []).map((c, index) => ({
+		...c,
+		index,
+	}));
+
+	const countryId = profileForm.countryId;
+
+	if (!countryId) {
+		return [{ label: "Others", options: allCultures }];
+	}
+
+	let recommended = allCultures.filter((c) => c.countryId === countryId);
+
+	if (recommended.length === 0) {
+		recommended = allCultures.filter((c) =>
+			["en-US", "es-ES", "de-DE"].includes(c.iso)
+		);
+	}
+
+	const recommendedIds = recommended.map((c) => c.value);
+	const others = allCultures.filter((c) => !recommendedIds.includes(c.value));
+
+	const groups = [];
+	if (recommended.length > 0) {
+		groups.push({ label: "Recommended", options: recommended });
+	}
+	if (others.length > 0) {
+		groups.push({ label: "Others", options: others });
+	}
+
+	return groups;
 });
 
 const genders = [
@@ -461,7 +583,7 @@ const genders = [
 ];
 
 const validatePhoneNumber = (rule, value, callback) => {
-	if (profile.phoneCode === null) {
+	if (profileForm.phoneCode === null) {
 		callback(new Error("Please select your country code"));
 	} else if (value?.length !== 10) {
 		callback(new Error("Phone number should be exactly 10 digits"));
@@ -487,7 +609,7 @@ const validatePostalCode = (rule, value, callback) => {
 };
 
 const validateCountry = (rule, value, callback) => {
-	if (!countries.value.map((c) => c.id).includes(value)) {
+	if (!globalStore.countries.map((c) => c.id).includes(value)) {
 		callback(new Error("Please select your country"));
 	} else {
 		callback();
@@ -508,7 +630,7 @@ const validateRegion = (rule, value, callback) => {
 };
 
 const validateCulture = (rule, value, callback) => {
-	if (profile.cultureId === null) {
+	if (value === null) {
 		callback(new Error("Please select your preferred language"));
 	} else {
 		callback();
@@ -596,7 +718,7 @@ const profileFormRules = reactive({
 			trigger: ["blur", "change"],
 		},
 	],
-	country: [
+	countryId: [
 		{
 			required: true,
 			message: "Please select your country",
@@ -607,7 +729,7 @@ const profileFormRules = reactive({
 			trigger: ["blur", "change"],
 		},
 	],
-	region: [
+	regionId: [
 		{
 			required: true,
 			message: "Please select your region",
@@ -618,7 +740,7 @@ const profileFormRules = reactive({
 			trigger: ["blur", "change"],
 		},
 	],
-	culture: [
+	cultureId: [
 		{
 			required: true,
 			message: "Please select your preferred language",
@@ -686,7 +808,7 @@ const uploadProfilePicture = async (event) => {
 			formData.append("avatar", file);
 			const response = await apiRequest(
 				HttpMethods.POST,
-				Endpoints.CHANGE_PROFILE_PICTURE(globalStore.user.id),
+				Endpoints.CHANGE_PROFILE_PICTURE,
 				formData
 			);
 			if (response.status === 200) {
@@ -703,6 +825,64 @@ const uploadProfilePicture = async (event) => {
 		throw error;
 	} finally {
 		uploading.value = false;
+	}
+};
+
+const editProfile = () => {
+	Object.assign(originalProfileForm, profileForm);
+	inEditMode.value = true;
+};
+
+const cancelEdit = () => {
+	Object.assign(profileForm, originalProfileForm);
+	inEditMode.value = false;
+};
+
+const saveProfile = async () => {
+	let hasFormValidationError = true;
+
+	try {
+		await profileFormRef.value.validate();
+		hasFormValidationError = false;
+		saving.value = true;
+
+		if (hasDifference(toRaw(originalProfileForm), toRaw(profileForm))) {
+			const payload = getDifference(
+				toRaw(originalProfileForm),
+				toRaw(profileForm)
+			);
+
+			for (const key in payload) {
+				if (typeof payload[key] === "string") {
+					payload[key] = payload[key].trim();
+				}
+			}
+
+			const response = await apiRequest(
+				HttpMethods.PATCH,
+				Endpoints.UPDATE_USER_PROFILE,
+				payload
+			);
+
+			if (response.status === HttpStatus.OK) {
+				notifySuccess("Profile updated successfully.");
+				globalStore.setUserProfile(toRaw(profileForm));
+			} else {
+				throw new this.$WebError("Failed to update profile", response);
+			}
+		}
+
+		Object.assign(originalProfileForm, profileForm);
+		inEditMode.value = false;
+	} catch (error) {
+		if (hasFormValidationError) {
+			return;
+		}
+		if (error.name !== "ElValidationError") {
+			notifyError("An error occurred while updating your profile.");
+		}
+	} finally {
+		saving.value = false;
 	}
 };
 
@@ -774,9 +954,15 @@ onMounted(async () => {
 					cursor: pointer;
 				}
 
-				::v-deep(.el-date-editor .el-input__icon) {
-					transform: scale(1.3);
-					color: #000000;
+				.el-form {
+					::v-deep(.el-date-editor.disable-mode .el-input__icon) {
+						transform: scale(1.3);
+						color: var(--el-disabled-text-color) !important;
+					}
+
+					.svg-inline--fa.disable-mode {
+						color: var(--el-disabled-text-color) !important;
+					}
 				}
 			}
 

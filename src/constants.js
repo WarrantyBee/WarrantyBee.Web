@@ -6,8 +6,8 @@ const Endpoints = {
 	FORGOT_PASSWORD: "/auth/forgotpassword",
 	RESET_PASSWORD: "/auth/resetpassword",
 	GET_USER_PROFILE: "/users/profile",
-	CHANGE_PROFILE_PICTURE: (userId) =>
-		"/users/{0}/changeavatar".replace("{0}", `${userId}`),
+	CHANGE_PROFILE_PICTURE: "/users/profile/changeavatar",
+	UPDATE_USER_PROFILE: "/users/profile",
 };
 
 const CacheKeys = {
@@ -27,6 +27,7 @@ const HttpMethods = {
 	POST: "POST",
 	PUT: "PUT",
 	DELETE: "DELETE",
+	PATCH: "PATCH",
 };
 
 const Genders = {

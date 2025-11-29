@@ -34,7 +34,11 @@ export async function apiRequest(method, url, data = {}, config = {}) {
 		let recaptchaToken;
 		const isFormData = data instanceof FormData;
 
-		if (method === HttpMethods.POST || method === HttpMethods.PUT) {
+		if (
+			method === HttpMethods.POST ||
+			method === HttpMethods.PUT ||
+			method === HttpMethods.PATCH
+		) {
 			if (url !== Endpoints.ALIVE) {
 				recaptchaToken = await getRecaptchaToken();
 				if (isFormData) {
