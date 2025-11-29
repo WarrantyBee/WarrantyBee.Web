@@ -61,7 +61,7 @@ router.beforeEach(async (to, from, next) => {
 					throw new WebError("Unexpected response from server.", response);
 				}
 
-				const cultures = response.data.data.countries
+				const cultures = response.data.data
 					.filter((c) => c.hasOwnProperty("cultures") && c.cultures?.length > 0)
 					.map((c) => {
 						return c.cultures
