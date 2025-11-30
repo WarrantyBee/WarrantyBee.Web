@@ -125,11 +125,12 @@ import {
 	ErrorCodes,
 	Endpoints,
 	CacheKeys,
-	MenuItems,
 } from "../../constants.js";
 import { useRouter } from "vue-router";
 import { useGlobalStore } from "../../stores/global/index.js";
+import { useI18n } from "vue-i18n";
 
+const { locale } = useI18n();
 const globalStore = useGlobalStore();
 const router = useRouter();
 const emit = defineEmits([
@@ -218,6 +219,7 @@ const signIn = async () => {
 					localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
 					globalStore.setUser(data.user);
 					globalStore.setAccessToken(data.accessToken);
+					locale.value = data.user.profile.culture.iso;
 					emit("sign-in-success");
 				} else {
 					throw new this.$WebError(

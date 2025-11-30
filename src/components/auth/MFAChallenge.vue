@@ -98,6 +98,8 @@ import {
 	CacheKeys,
 	ErrorCodes,
 } from "../../constants";
+import { useGlobalStore } from "../../stores/global/index";
+import { useI18n } from "vue-i18n";
 
 const emit = defineEmits(["sign-in", "sign-in-success"]);
 const props = defineProps({
@@ -107,6 +109,8 @@ const props = defineProps({
 	},
 });
 
+const { locale } = useI18n();
+const globalStore = useGlobalStore();
 const timer = ref(60);
 const enableResendBtn = ref(false);
 const signingIn = ref(false);
@@ -241,6 +245,9 @@ const signIn = async () => {
 				const data = response.data?.data;
 				if (data?.accessToken) {
 					localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
+					globalStore.setUser(data.user);
+					globalStore.setAccessToken(data.accessToken);
+					locale.value = data.user.profile.culture.iso;
 					signingIn.value = false;
 					emit("sign-in-success", data);
 				} else {
