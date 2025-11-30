@@ -1,0 +1,49 @@
+{
+	"locale": "fr-FR",
+	"menu": {
+		"dashboard": "Tableau de bord",
+		"products": "Des produits",
+		"warranties": "Garanties",
+		"all_products": "Tous les produits",
+		"add_product": "Ajouter un produit",
+		"archived_products": "Produits archivés",
+		"active_warranties": "Garanties actives",
+		"expiring_soon": "Expirant bientôt",
+		"expired_warranties": "Garanties Expirées",
+		"my_profile": "Mon Profil",
+		"sign_out": "Se Déconnecter"
+	},
+	"form_labels": {
+		"first_name": "Prénom",
+		"last_name": "Nom",
+		"email": "E-mail",
+		"phone_number": "Numéro de Téléphone",
+		"address_line_1": "Ligne d'Adresse 1",
+		"address_line_2": "Ligne d'Adresse 2",
+		"city": "Ville",
+		"region": "Région",
+		"postal_code": "Code Postal",
+		"country": "Pays",
+		"date_of_birth": "Date de Naissance",
+		"gender": "Genre",
+		"preferred_language": "Langue Préférée"
+	},
+	"button_labels": {
+		"cancel": "Annuler",
+		"edit": "Modifier",
+		"save": "Enregistrer"
+	},
+	"notifications": {
+		"success": {
+			"title": "Succès",
+			"profile_picture_updated": "Photo de profil mise à jour avec succès.",
+			"profile_updated": "Profil mis à jour avec succès."
+		},
+		"error": {
+			"title": "Erreur",
+			"profile_picture_upload": "Une erreur s'est produite lors du téléchargement de la photo de profil. Veuillez réessayer.",
+			"profile_update": "Une erreur s'est produite lors de la mise à jour du profil. Veuillez réessayer.",
+			"profile_picture_size": "Téléchargez une image de moins de 2 Mo."
+		}
+	}
+}

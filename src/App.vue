@@ -12,12 +12,14 @@ import { loadRecaptcha, getRecaptchaToken } from "./services/recaptcha";
 import { computed, onMounted, ref } from "vue";
 import { Events, NotificationTypes } from "./constants";
 import { useGlobalStore } from "./stores/global/index";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const globalStore = useGlobalStore();
 const loading = computed(() => globalStore.loading);
 const showSuccessNotification = (message) => {
 	ElNotification({
-		title: "Success",
+		title: t("notifications.success.title"),
 		message: message,
 		type: NotificationTypes.SUCCESS,
 		duration: 5000,
@@ -26,7 +28,7 @@ const showSuccessNotification = (message) => {
 
 const showErrorNotification = (message) => {
 	ElNotification({
-		title: "Error",
+		title: t("notifications.error.title"),
 		message: message,
 		type: NotificationTypes.ERROR,
 		duration: 5000,

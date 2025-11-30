@@ -1,0 +1,49 @@
+{
+	"locale": "es-US",
+	"menu": {
+		"dashboard": "Tablero",
+		"products": "Productos",
+		"warranties": "Garantías",
+		"all_products": "Todos los productos",
+		"add_product": "Añadir Producto",
+		"archived_products": "Productos archivados",
+		"active_warranties": "Garantías activas",
+		"expiring_soon": "Vencen pronto",
+		"expired_warranties": "Garantías Expiradas",
+		"my_profile": "Mi Perfil",
+		"sign_out": "Cerrar Sesión"
+	},
+	"form_labels": {
+		"first_name": "Nombre",
+		"last_name": "Apellido",
+		"email": "Correo Electrónico",
+		"phone_number": "Número de Teléfono",
+		"address_line_1": "Dirección Línea 1",
+		"address_line_2": "Dirección Línea 2",
+		"city": "Ciudad",
+		"region": "Región",
+		"postal_code": "Código Postal",
+		"country": "País",
+		"date_of_birth": "Fecha de Nacimiento",
+		"gender": "Género",
+		"preferred_language": "Idioma Preferido"
+	},
+	"button_labels": {
+		"cancel": "Cancelar",
+		"edit": "Editar",
+		"save": "Guardar"
+	},
+	"notifications": {
+		"success": {
+			"title": "Éxito",
+			"profile_picture_updated": "Foto de perfil actualizada con éxito.",
+			"profile_updated": "Perfil actualizado con éxito."
+		},
+		"error": {
+			"title": "Error",
+			"profile_picture_upload": "Se produjo un error al subir la foto de perfil. Inténtalo de nuevo.",
+			"profile_update": "Se produjo un error al actualizar el perfil. Inténtalo de nuevo.",
+			"profile_picture_size": "Sube una imagen de menos de 2 MB."
+		}
+	}
+}

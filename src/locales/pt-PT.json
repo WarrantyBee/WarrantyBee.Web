@@ -1,0 +1,49 @@
+{
+	"locale": "pt-PT",
+	"menu": {
+		"dashboard": "Painel",
+		"products": "Produtos",
+		"warranties": "Garantias",
+		"all_products": "Todos os produtos",
+		"add_product": "Adicionar Produto",
+		"archived_products": "Produtos arquivados",
+		"active_warranties": "Garantias ativas",
+		"expiring_soon": "Expirando em breve",
+		"expired_warranties": "Garantias Expiradas",
+		"my_profile": "Meu Perfil",
+		"sign_out": "Sair"
+	},
+	"form_labels": {
+		"first_name": "Nome",
+		"last_name": "Sobrenome",
+		"email": "E-mail",
+		"phone_number": "Número de Telefone",
+		"address_line_1": "Endereço Linha 1",
+		"address_line_2": "Endereço Linha 2",
+		"city": "Cidade",
+		"region": "Região",
+		"postal_code": "Código Postal",
+		"country": "País",
+		"date_of_birth": "Data de Nascimento",
+		"gender": "Gênero",
+		"preferred_language": "Idioma Preferido"
+	},
+	"button_labels": {
+		"cancel": "Cancelar",
+		"edit": "Editar",
+		"save": "Salvar"
+	},
+	"notifications": {
+		"success": {
+			"title": "Sucesso",
+			"profile_picture_updated": "Foto do perfil atualizada com sucesso.",
+			"profile_updated": "Perfil atualizado com sucesso."
+		},
+		"error": {
+			"title": "Erro",
+			"profile_picture_upload": "Ocorreu um erro ao carregar a foto do perfil. Por favor, tente novamente.",
+			"profile_update": "Ocorreu um erro ao atualizar o perfil. Por favor, tente novamente.",
+			"profile_picture_size": "Carregue uma imagem com menos de 2 MB."
+		}
+	}
+}

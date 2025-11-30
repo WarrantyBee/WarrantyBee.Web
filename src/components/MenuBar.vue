@@ -12,29 +12,31 @@
 			>
 				<img class="menu-banner" src="../assets/menu_banner.png" alt="" />
 			</div>
-			<el-menu-item index="1" class="poppins-light"> Dashboard </el-menu-item>
+			<el-menu-item index="1" class="poppins-light">
+				{{ $t("menu.dashboard") }}
+			</el-menu-item>
 			<el-sub-menu index="2" class="poppins-light">
-				<template #title> Products</template>
+				<template #title>{{ $t("menu.products") }}</template>
 				<el-menu-item index="2-1" class="poppins-light">
-					All Products
+					{{ $t("menu.all_products") }}
 				</el-menu-item>
 				<el-menu-item index="2-2" class="poppins-light">
-					Add Product
+					{{ $t("menu.add_product") }}
 				</el-menu-item>
 				<el-menu-item index="2-3" class="poppins-light">
-					Archived Products
+					{{ $t("menu.archived_products") }}
 				</el-menu-item>
 			</el-sub-menu>
 			<el-sub-menu index="3" class="poppins-light">
-				<template #title> Warranties</template>
+				<template #title>{{ $t("menu.warranties") }}</template>
 				<el-menu-item index="3-1" class="poppins-light">
-					Active Warranties
+					{{ $t("menu.active_warranties") }}
 				</el-menu-item>
 				<el-menu-item index="3-2" class="poppins-light">
-					Expiring Soon
+					{{ $t("menu.expiring_soon") }}
 				</el-menu-item>
 				<el-menu-item index="3-3" class="poppins-light">
-					Expired Warranties
+					{{ $t("menu.expired_warranties") }}
 				</el-menu-item>
 			</el-sub-menu>
 			<el-sub-menu index="4" class="profile-details poppins-light">
@@ -43,10 +45,10 @@
 					{{ globalStore.getUserFullName }}</template
 				>
 				<el-menu-item index="4-1" class="poppins-light">
-					My Profile
+					{{ $t("menu.my_profile") }}
 				</el-menu-item>
 				<el-menu-item index="4-2" class="poppins-light" @click="signOut()">
-					Sign Out
+					{{ $t("menu.sign_out") }}
 				</el-menu-item>
 			</el-sub-menu>
 		</el-menu>

@@ -1,0 +1,49 @@
+{
+	"locale": "zh-TW",
+	"menu": {
+		"dashboard": "儀表板",
+		"products": "產品",
+		"warranties": "保修單",
+		"all_products": "所有產品",
+		"add_product": "添加產品",
+		"archived_products": "存檔產品",
+		"active_warranties": "有效保修",
+		"expiring_soon": "即將到期",
+		"expired_warranties": "已過期的保修",
+		"my_profile": "我的個人資料",
+		"sign_out": "登出"
+	},
+	"form_labels": {
+		"first_name": "名字",
+		"last_name": "姓",
+		"email": "電子郵件",
+		"phone_number": "電話號碼",
+		"address_line_1": "地址第一行",
+		"address_line_2": "地址第二行",
+		"city": "城市",
+		"region": "地區",
+		"postal_code": "郵政編碼",
+		"country": "國家",
+		"date_of_birth": "出生日期",
+		"gender": "性別",
+		"preferred_language": "首選語言"
+	},
+	"button_labels": {
+		"cancel": "取消",
+		"edit": "編輯",
+		"save": "保存"
+	},
+	"notifications": {
+		"success": {
+			"title": "成功",
+			"profile_picture_updated": "個人資料圖片已成功更新。",
+			"profile_updated": "個人資料已成功更新。"
+		},
+		"error": {
+			"title": "錯誤",
+			"profile_picture_upload": "上傳個人資料圖片時出錯。請再試一次。",
+			"profile_update": "更新個人資料時出錯。請再試一次。",
+			"profile_picture_size": "上傳小於2MB的圖片。"
+		}
+	}
+}

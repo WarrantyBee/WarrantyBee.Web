@@ -1,0 +1,49 @@
+{
+	"locale": "ko-KR",
+	"menu": {
+		"dashboard": "대시보드",
+		"products": "제품",
+		"warranties": "보증",
+		"all_products": "모든 제품",
+		"add_product": "제품 추가",
+		"archived_products": "보관된 제품",
+		"active_warranties": "활성 보증",
+		"expiring_soon": "곧 만료",
+		"expired_warranties": "만료된 보증",
+		"my_profile": "내 프로필",
+		"sign_out": "로그아웃"
+	},
+	"form_labels": {
+		"first_name": "이름",
+		"last_name": "성",
+		"email": "이메일",
+		"phone_number": "전화 번호",
+		"address_line_1": "주소 1",
+		"address_line_2": "주소 2",
+		"city": "도시",
+		"region": "지역",
+		"postal_code": "우편 번호",
+		"country": "국가",
+		"date_of_birth": "생년월일",
+		"gender": "성별",
+		"preferred_language": "선호하는 언어"
+	},
+	"button_labels": {
+		"cancel": "취소",
+		"edit": "편집",
+		"save": "저장"
+	},
+	"notifications": {
+		"success": {
+			"title": "성공",
+			"profile_picture_updated": "프로필 사진이 성공적으로 업데이트되었습니다.",
+			"profile_updated": "프로필이 성공적으로 업데이트되었습니다."
+		},
+		"error": {
+			"title": "오류",
+			"profile_picture_upload": "프로필 사진을 업로드하는 동안 오류가 발생했습니다. 다시 시도하십시오.",
+			"profile_update": "프로필을 업데이트하는 동안 오류가 발생했습니다. 다시 시도하십시오.",
+			"profile_picture_size": "2MB보다 작은 이미지를 업로드하십시오."
+		}
+	}
+}
