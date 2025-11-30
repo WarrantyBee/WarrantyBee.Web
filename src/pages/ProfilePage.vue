@@ -43,7 +43,7 @@
 									:loading="saving"
 									:disabled="saving"
 								>
-									SAVE
+									{{ $t("button_labels.save") }}
 								</el-button>
 							</div>
 							<div v-if="inEditMode" class="d-flex">
@@ -54,7 +54,7 @@
 									plain
 									:disabled="saving"
 								>
-									CANCEL
+									{{ $t("button_labels.cancel") }}
 								</el-button>
 							</div>
 							<div v-if="!inEditMode" class="d-flex">
@@ -64,7 +64,7 @@
 									size="large"
 									@click="editProfile"
 								>
-									EDIT
+									{{ $t("button_labels.edit") }}
 								</el-button>
 							</div>
 						</div>
@@ -80,7 +80,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="First Name"
+										:label="$t('form_labels.first_name')"
 										prop="firstname"
 									>
 										<el-input
@@ -102,7 +102,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Last Name"
+										:label="$t('form_labels.last_name')"
 										prop="lastname"
 									>
 										<el-input
@@ -124,7 +124,7 @@
 								<div class="d-flex fb-50">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Address Line 1"
+										:label="$t('form_labels.address_line_1')"
 										prop="addressLine1"
 									>
 										<el-input
@@ -149,7 +149,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Email"
+										:label="$t('form_labels.email')"
 										prop="email"
 									>
 										<el-input
@@ -171,7 +171,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Phone Number"
+										:label="$t('form_labels.phone_number')"
 										prop="phoneNumber"
 									>
 										<el-input
@@ -230,7 +230,7 @@
 								<div class="d-flex fb-50">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Address Line 2"
+										:label="$t('form_labels.address_line_2')"
 										prop="addressLine2"
 									>
 										<el-input
@@ -255,7 +255,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Postal Code"
+										:label="$t('form_labels.postal_code')"
 										prop="postalCode"
 									>
 										<el-input
@@ -278,7 +278,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="City"
+										:label="$t('form_labels.city')"
 										prop="city"
 									>
 										<el-input
@@ -302,7 +302,7 @@
 									<div class="d-flex fb-50">
 										<el-form-item
 											class="w-100 poppins-light"
-											label="Region"
+											:label="$t('form_labels.region')"
 											prop="regionId"
 										>
 											<el-select
@@ -338,7 +338,7 @@
 									<div class="d-flex fb-50">
 										<el-form-item
 											class="w-100 poppins-light"
-											label="Country"
+											:label="$t('form_labels.country')"
 											prop="countryId"
 										>
 											<el-select
@@ -381,7 +381,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Date Of Birth"
+										:label="$t('form_labels.date_of_birth')"
 										prop="dateOfBirth"
 									>
 										<el-date-picker
@@ -400,7 +400,7 @@
 								<div class="d-flex fb-25">
 									<el-form-item
 										class="w-100 poppins-light"
-										label="Gender"
+										:label="$t('form_labels.gender')"
 										prop="gender"
 									>
 										<el-select
@@ -432,7 +432,7 @@
 										<el-form-item
 											class="w-100 poppins-light"
 											prop="cultureId"
-											label="Preferred Language"
+											:label="$t('form_labels.preferred_language')"
 										>
 											<el-select
 												name="cultureId"
@@ -485,6 +485,7 @@ import { useGlobalStore } from "../stores/global/index.js";
 import { apiRequest } from "../services/api";
 import { Endpoints, Genders, HttpMethods, HttpStatus } from "../constants";
 import { hasDifference, getDifference } from "../utils/jsonhelper.js";
+import { useI18n } from "vue-i18n";
 
 const globalStore = useGlobalStore();
 const profileFormRef = ref();
@@ -493,6 +494,7 @@ const saving = ref(false);
 const showForm = ref(false);
 const uploading = ref(false);
 const originalProfileForm = reactive({});
+const { t, locale } = useI18n();
 
 const profileForm = reactive({
 	id: null,
@@ -801,7 +803,7 @@ const uploadProfilePicture = async (event) => {
 			const file = files[0];
 			const maxAllowedSizeInBytes = 2 * 1024 * 1024;
 			if (file.size > maxAllowedSizeInBytes) {
-				notifyError("Upload an image smaller than 2 MB.");
+				notifyError(t("notifications.error.profile_picture_size"));
 				return;
 			}
 			const formData = new FormData();
@@ -815,13 +817,13 @@ const uploadProfilePicture = async (event) => {
 				const url = response.data.data.url;
 				globalStore.setAvatarUrl(url);
 				profileForm.avatarUrl = url;
-				notifySuccess("Profile picture updated successfully.");
+				notifySuccess(t("notifications.success.profile_picture_updated"));
 			} else {
 				throw new this.$WebError("Unexpected response from server.", response);
 			}
 		}
 	} catch (error) {
-		notifyError("An error occurred while uploading the profile picture.");
+		notifyError(t("notifications.error.profile_picture_upload"));
 		throw error;
 	} finally {
 		uploading.value = false;
@@ -865,8 +867,9 @@ const saveProfile = async () => {
 			);
 
 			if (response.status === HttpStatus.OK) {
-				notifySuccess("Profile updated successfully.");
 				globalStore.setUserProfile(toRaw(profileForm));
+				locale.value = globalStore.user.profile.culture.iso;
+				notifySuccess(t("notifications.success.profile_updated"));
 			} else {
 				throw new this.$WebError("Failed to update profile", response);
 			}
@@ -879,7 +882,7 @@ const saveProfile = async () => {
 			return;
 		}
 		if (error.name !== "ElValidationError") {
-			notifyError("An error occurred while updating your profile.");
+			notifyError(t("notifications.error.profile_update"));
 		}
 	} finally {
 		saving.value = false;

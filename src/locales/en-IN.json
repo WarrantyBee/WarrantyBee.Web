@@ -1,0 +1,49 @@
+{
+	"locale": "en-IN",
+	"menu": {
+		"dashboard": "Dashboard",
+		"products": "Products",
+		"warranties": "Warranties",
+		"all_products": "All Products",
+		"add_product": "Add Product",
+		"archived_products": "Archived Products",
+		"active_warranties": "Active Warranties",
+		"expiring_soon": "Expiring Soon",
+		"expired_warranties": "Expired Warranties",
+		"my_profile": "My Profile",
+		"sign_out": "Sign Out"
+	},
+	"form_labels": {
+		"first_name": "First Name",
+		"last_name": "Last Name",
+		"email": "Email",
+		"phone_number": "Phone Number",
+		"address_line_1": "Address Line 1",
+		"address_line_2": "Address Line 2",
+		"city": "City",
+		"region": "Region",
+		"postal_code": "Postal Code",
+		"country": "Country",
+		"date_of_birth": "Date of Birth",
+		"gender": "Gender",
+		"preferred_language": "Preferred Language"
+	},
+	"button_labels": {
+		"cancel": "Cancel",
+		"edit": "Edit",
+		"save": "Save"
+	},
+	"notifications": {
+		"success": {
+			"title": "Success",
+			"profile_picture_updated": "Profile picture updated successfully.",
+			"profile_updated": "Profile updated successfully."
+		},
+		"error": {
+			"title": "Error",
+			"profile_picture_upload": "An error occurred while uploading the profile picture. Please try again.",
+			"profile_update": "An error occurred while updating the profile. Please try again.",
+			"profile_picture_size": "Upload an image smaller than 2 MB."
+		}
+	}
+}

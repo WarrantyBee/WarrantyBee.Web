@@ -68,6 +68,9 @@ const setUserProfile = function (profile) {
 			this.user.profile.address.region.id = profile.regionId;
 		}
 		if (profile.hasOwnProperty("cultureId")) {
+			this.user.profile.culture = this.cultures.find(
+				(culture) => culture.value === profile.cultureId
+			);
 			this.user.profile.culture.id = profile.cultureId;
 		}
 	}

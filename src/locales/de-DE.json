@@ -1,0 +1,49 @@
+{
+	"locale": "de-DE",
+	"menu": {
+		"dashboard": "Dashboard",
+		"products": "Produkte",
+		"warranties": "Garantien",
+		"all_products": "Alle Produkte",
+		"add_product": "Produkt hinzufügen",
+		"archived_products": "Archivierte Produkte",
+		"active_warranties": "Aktive Garantien",
+		"expiring_soon": "Läuft bald ab",
+		"expired_warranties": "Abgelaufene Garantien",
+		"my_profile": "Mein Profil",
+		"sign_out": "Abmelden"
+	},
+	"form_labels": {
+		"first_name": "Vorname",
+		"last_name": "Nachname",
+		"email": "Email",
+		"phone_number": "Telefonnummer",
+		"address_line_1": "Adresszeile 1",
+		"address_line_2": "Adresszeile 2",
+		"city": "Stadt",
+		"region": "Region",
+		"postal_code": "Postleitzahl",
+		"country": "Land",
+		"date_of_birth": "Geburtsdatum",
+		"gender": "Geschlecht",
+		"preferred_language": "Bevorzugte Sprache"
+	},
+	"button_labels": {
+		"cancel": "Stornieren",
+		"edit": "Bearbeiten",
+		"save": "Speichern"
+	},
+	"notifications": {
+		"success": {
+			"title": "Erfolg",
+			"profile_picture_updated": "Profilbild erfolgreich aktualisiert.",
+			"profile_updated": "Profil erfolgreich aktualisiert."
+		},
+		"error": {
+			"title": "Fehler",
+			"profile_picture_upload": "Beim Hochladen des Profilbildes ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+			"profile_update": "Beim Aktualisieren des Profils ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+			"profile_picture_size": "Laden Sie ein Bild hoch, das kleiner als 2 MB ist."
+		}
+	}
+}

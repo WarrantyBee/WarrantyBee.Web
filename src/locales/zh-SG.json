@@ -1,0 +1,49 @@
+{
+	"locale": "zh-SG",
+	"menu": {
+		"dashboard": "仪表板",
+		"products": "产品",
+		"warranties": "保修单",
+		"all_products": "所有产品",
+		"add_product": "添加产品",
+		"archived_products": "存档产品",
+		"active_warranties": "有效保修",
+		"expiring_soon": "即将到期",
+		"expired_warranties": "已过期的保修",
+		"my_profile": "我的个人资料",
+		"sign_out": "登出"
+	},
+	"form_labels": {
+		"first_name": "名字",
+		"last_name": "姓",
+		"email": "电子邮件",
+		"phone_number": "电话号码",
+		"address_line_1": "地址第一行",
+		"address_line_2": "地址第二行",
+		"city": "城市",
+		"region": "地区",
+		"postal_code": "邮政编码",
+		"country": "国家",
+		"date_of_birth": "出生日期",
+		"gender": "性别",
+		"preferred_language": "首选语言"
+	},
+	"button_labels": {
+		"cancel": "取消",
+		"edit": "编辑",
+		"save": "保存"
+	},
+	"notifications": {
+		"success": {
+			"title": "成功",
+			"profile_picture_updated": "个人资料图片已成功更新。",
+			"profile_updated": "个人资料已成功更新。"
+		},
+		"error": {
+			"title": "错误",
+			"profile_picture_upload": "上传个人资料图片时出错。请再試一次。",
+			"profile_update": "更新个人资料时出错。请再試一次。",
+			"profile_picture_size": "上传小于2MB的图片。"
+		}
+	}
+}

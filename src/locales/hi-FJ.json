@@ -1,0 +1,49 @@
+{
+	"locale": "hi-FJ",
+	"menu": {
+		"dashboard": "डैशबोर्ड",
+		"products": "उत्पाद",
+		"warranties": "वारंटी",
+		"all_products": "सभी उत्पाद",
+		"add_product": "उत्पाद जोड़ें",
+		"archived_products": "संग्रहीत उत्पाद",
+		"active_warranties": "सक्रिय वारंटी",
+		"expiring_soon": "जल्द ही समाप्त हो रहा है",
+		"expired_warranties": "समाप्त हो चुकी वारंटी",
+		"my_profile": "मेरी प्रोफाइल",
+		"sign_out": "साइन आउट"
+	},
+	"form_labels": {
+		"first_name": "पहला नाम",
+		"last_name": "अंतिम नाम",
+		"email": "ईमेल",
+		"phone_number": "फ़ोन नंबर",
+		"address_line_1": "पता पंक्ति 1",
+		"address_line_2": "पता पंक्ति 2",
+		"city": "शहर",
+		"region": "क्षेत्र",
+		"postal_code": "डाक कोड",
+		"country": "देश",
+		"date_of_birth": "जन्म की तारीख",
+		"gender": "लिंग",
+		"preferred_language": "पसंदीदा भाषा"
+	},
+	"button_labels": {
+		"cancel": "रद्द करें",
+		"edit": "संपादित करें",
+		"save": "सहेजें"
+	},
+	"notifications": {
+		"success": {
+			"title": "सफलता",
+			"profile_picture_updated": "प्रोफ़ाइल चित्र सफलतापूर्वक अपडेट किया गया।",
+			"profile_updated": "प्रोफ़ाइल सफलतापूर्वक अपडेट की गई।"
+		},
+		"error": {
+			"title": "त्रुटि",
+			"profile_picture_upload": "प्रोफ़ाइल चित्र अपलोड करते समय एक त्रुटि हुई। कृपया पुन: प्रयास करें।",
+			"profile_update": "प्रोफ़ाइल अपडेट करते समय एक त्रुटि हुई। कृपया पुन: प्रयास करें।",
+			"profile_picture_size": "2 एमबी से छोटी छवि अपलोड करें।"
+		}
+	}
+}

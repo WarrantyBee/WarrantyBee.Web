@@ -1,0 +1,49 @@
+{
+	"locale": "ar-MA",
+	"menu": {
+		"dashboard": "لوحة القيادة",
+		"products": "المنتجات",
+		"warranties": "الضمانات",
+		"all_products": "جميع المنتجات",
+		"add_product": "أضف منتج",
+		"archived_products": "المنتجات المؤرشفة",
+		"active_warranties": "الضمانات النشطة",
+		"expiring_soon": "تنتهي قريبا",
+		"expired_warranties": "الضمانات منتهية الصلاحية",
+		"my_profile": "ملفي الشخصي",
+		"sign_out": "تسجيل الخروج"
+	},
+	"form_labels": {
+		"first_name": "الاسم الأول",
+		"last_name": "اسم العائلة",
+		"email": "البريد الإلكتروني",
+		"phone_number": "رقم الهاتف",
+		"address_line_1": "عنوان الشارع 1",
+		"address_line_2": "عنوان الشارع 2",
+		"city": "المدينة",
+		"region": "المنطقة",
+		"postal_code": "الرمز البريدي",
+		"country": "البلد",
+		"date_of_birth": "تاريخ الميلاد",
+		"gender": "الجنس",
+		"preferred_language": "اللغة المفضلة"
+	},
+	"button_labels": {
+		"cancel": "إلغاء",
+		"edit": "تعديل",
+		"save": "حفظ"
+	},
+	"notifications": {
+		"success": {
+			"title": "نجاح",
+			"profile_picture_updated": "تم تحديث صورة الملف الشخصي بنجاح.",
+			"profile_updated": "تم تحديث الملف الشخصي بنجاح."
+		},
+		"error": {
+			"title": "خطأ",
+			"profile_picture_upload": "حدث خطأ أثناء تحميل صورة الملف الشخصي. حاول مرة اخرى.",
+			"profile_update": "حدث خطأ أثناء تحديث الملف الشخصي. حاول مرة اخرى.",
+			"profile_picture_size": "قم بتحميل صورة أصغر من 2 ميغا بايت."
+		}
+	}
+}

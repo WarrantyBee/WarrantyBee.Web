@@ -9,6 +9,8 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import { useGlobalStore } from "./stores/global";
+import { createI18nInstance } from "./services/localization";
 
 import "./style.css";
 import "./fonts.css";
@@ -22,6 +24,9 @@ pinia.use(piniaPluginPersistedstate);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.use(ElementPlus);
 app.use(pinia);
+const globalStore = useGlobalStore();
+const i18n = createI18nInstance(globalStore.user?.profile?.culture?.iso);
+app.use(i18n);
 app.use(telemetry);
 app.use(router);
 app.mount("#app");

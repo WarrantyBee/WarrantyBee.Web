@@ -1,0 +1,49 @@
+{
+	"locale": "ja-JP",
+	"menu": {
+		"dashboard": "ダッシュボード",
+		"products": "製品",
+		"warranties": "保証",
+		"all_products": "すべての製品",
+		"add_product": "製品を追加",
+		"archived_products": "アーカイブされた製品",
+		"active_warranties": "アクティブな保証",
+		"expiring_soon": "まもなく期限切れ",
+		"expired_warranties": "期限切れの保証",
+		"my_profile": "マイプロフィール",
+		"sign_out": "サインアウト"
+	},
+	"form_labels": {
+		"first_name": "名",
+		"last_name": "姓",
+		"email": "Eメール",
+		"phone_number": "電話番号",
+		"address_line_1": "住所1",
+		"address_line_2": "住所2",
+		"city": "市",
+		"region": "地域",
+		"postal_code": "郵便番号",
+		"country": "国",
+		"date_of_birth": "生年月日",
+		"gender": "性別",
+		"preferred_language": "希望する言語"
+	},
+	"button_labels": {
+		"cancel": "キャンセル",
+		"edit": "編集",
+		"save": "保存"
+	},
+	"notifications": {
+		"success": {
+			"title": "成功",
+			"profile_picture_updated": "プロフィール写真が正常に更新されました。",
+			"profile_updated": "プロフィールが正常に更新されました。"
+		},
+		"error": {
+			"title": "エラー",
+			"profile_picture_upload": "プロフィール写真のアップロード中にエラーが発生しました。もう一度やり直してください。",
+			"profile_update": "プロフィールの更新中にエラーが発生しました。もう一度やり直してください。",
+			"profile_picture_size": "2MB未満の画像をアップロードしてください。"
+		}
+	}
+}
