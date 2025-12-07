@@ -5,15 +5,22 @@ import { HttpMethods, CacheKeys, Endpoints } from "../constants";
 const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_API_BASE_URL,
 	timeout: import.meta.env.VITE_API_TIMEOUT,
-	headers: {
-		Authorization: `Bearer ${localStorage.getItem(CacheKeys.ACCESS_TOKEN)}`,
-	},
+	headers: {},
 });
 
 apiClient.interceptors.request.use(
 	(config) => {
-		const token = localStorage.getItem(CacheKeys.ACCESS_TOKEN);
-		if (token) config.headers.Authorization = `Bearer ${token}`;
+		let whitelistedUrls = import.meta.env.VITE_API_WHITELISTED_URLS;
+		const whitelist = whitelistedUrls.split(",");
+		const isWhitelisted = whitelist.some((url) => config.url.includes(url));
+		if (isWhitelisted) {
+			delete config.headers.Authorization;
+		} else {
+			const token = localStorage.getItem(CacheKeys.ACCESS_TOKEN);
+			if (token) {
+				config.headers.Authorization = `Bearer ${token}`;
+			}
+		}
 		return config;
 	},
 	(error) => Promise.reject(error)

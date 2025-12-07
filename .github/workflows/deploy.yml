@@ -85,6 +85,7 @@ jobs:
           echo "VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}" >> .env
           echo "VITE_BETTERSTACK_SOURCE_URL=${{ secrets.VITE_BETTERSTACK_SOURCE_URL }}" >> .env
           echo "VITE_BETTERSTACK_ACCESS_TOKEN=${{ secrets.VITE_BETTERSTACK_ACCESS_TOKEN }}" >> .env
+          echo "VITE_API_WHITELISTED_URLS=${{ secrets.VITE_API_WHITELISTED_URLS }}" >> .env
         shell: bash
 
       - name: Install dependencies
