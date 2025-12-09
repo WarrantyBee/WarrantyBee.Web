@@ -511,7 +511,7 @@
 					</div>
 				</el-form>
 				<div class="d-flex align-items-center gap-2 mt-3">
-					<div class="login-provider">
+					<div class="login-provider" @click="signUpThroughFacebook($event)">
 						<font-awesome-icon :icon="['fab', 'facebook-f']" class="fa-lg" />
 					</div>
 					<div class="login-provider">
@@ -561,6 +561,7 @@ import {
 import { useGlobalStore } from "../../stores/global/index.js";
 
 const emit = defineEmits(["sign-in"]);
+const facebook = reactive({});
 
 const globalStore = useGlobalStore();
 const errors = reactive({
@@ -1098,6 +1099,10 @@ const signUp = async () => {
 	} finally {
 		signingUp.value = false;
 	}
+};
+
+const signUpThroughFacebook = async () => {
+	window.location.href = Endpoints.FB_SIGN_UP_REDIRECT_URL;
 };
 
 onMounted(() => {

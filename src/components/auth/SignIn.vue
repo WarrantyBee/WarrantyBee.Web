@@ -126,13 +126,11 @@ import {
 	Endpoints,
 	CacheKeys,
 } from "../../constants.js";
-import { useRouter } from "vue-router";
 import { useGlobalStore } from "../../stores/global/index.js";
 import { useI18n } from "vue-i18n";
 
 const { locale } = useI18n();
 const globalStore = useGlobalStore();
-const router = useRouter();
 const emit = defineEmits([
 	"mfa-sign-in",
 	"forgot-password",
