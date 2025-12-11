@@ -51,9 +51,9 @@ const router = createRouter({
 	routes,
 });
 
-router.afterEach(async (to, from, next) => {
+router.afterEach((to) => {
 	if (to.name === "OAuthCallback") {
-		await handleOAuthCallback(to, from, next);
+		handleOAuthCallback(to);
 	}
 });
 

@@ -76,9 +76,25 @@ const ErrorCodes = Object.freeze({
 });
 
 const AuthProviders = Object.freeze({
-	GOOGLE: "google",
+	INTERNAL: "internal",
 	FACEBOOK: "facebook",
+	GOOGLE: "google",
 	LINKEDIN: "linkedin",
+});
+
+const AuthProviderCodes = Object.freeze({
+	NONE: 0,
+	INTERNAL: 1,
+	FACEBOOK: 2,
+	GOOGLE: 3,
+	LINKEDIN: 4,
+});
+
+const AuthProviderNames = Object.freeze({
+	1: AuthProviders.INTERNAL,
+	2: AuthProviders.FACEBOOK,
+	3: AuthProviders.GOOGLE,
+	4: AuthProviders.LINKEDIN,
 });
 
 const OAuthCallbacks = Object.freeze({
@@ -113,6 +129,8 @@ export {
 	Genders,
 	MenuItems,
 	AuthProviders,
+	AuthProviderCodes,
+	AuthProviderNames,
 	OAuthCallbacks,
 	ApplicationRoutes,
 	ApplicationRouteNames,

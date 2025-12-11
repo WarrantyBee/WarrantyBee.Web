@@ -6,27 +6,27 @@ import {
 	AuthProviders,
 	OAuthCallbacks,
 	ApplicationRouteNames,
+	AuthProviderCodes,
 } from "../constants";
 import { useGlobalStore } from "../stores/global";
 import { WebError } from "../services/telemetry";
+import { useRouter } from "vue-router";
 
-export async function handleOAuthCallback(to, from, next) {
+export async function handleOAuthCallback(to) {
 	if (
 		Object.values(AuthProviders).includes(to.query.authProvider) &&
 		Object.values(OAuthCallbacks).includes(to.query.action) &&
 		to.query.code
 	) {
 		if (to.query.authProvider === AuthProviders.FACEBOOK) {
-			await handleFacebookSignUpRedirect(to, from, next);
-		}
-		if (to.query.action === OAuthCallbacks.SIGN_UP) {
-			// logic to redirect to sign up component
+			await handleFacebookSignUpRedirect(to);
 		}
 	}
 }
 
-export async function handleFacebookSignUpRedirect(to, from, next) {
+export async function handleFacebookSignUpRedirect(to) {
 	const globalStore = useGlobalStore();
+	const router = useRouter();
 	let redirect = {
 		action: OAuthCallbacks.SIGN_UP,
 		...globalStore.redirect.signup,
@@ -34,7 +34,7 @@ export async function handleFacebookSignUpRedirect(to, from, next) {
 	};
 	globalStore.setScreenLoader(true, "Taking you to Sign Up page...");
 	const body = {
-		provider: to.query.authProvider,
+		provider: AuthProviderCodes[to.query.authProvider.toUpperCase()],
 		code: to.query.code,
 	};
 	try {
@@ -58,6 +58,6 @@ export async function handleFacebookSignUpRedirect(to, from, next) {
 	} finally {
 		globalStore.setScreenLoader(false);
 		globalStore.setRedirection(redirect);
-		return next({ name: ApplicationRouteNames.AUTH });
+		router.push({ name: ApplicationRouteNames.AUTH });
 	}
 }

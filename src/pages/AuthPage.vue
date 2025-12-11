@@ -35,7 +35,7 @@ import SignUp from "../components/auth/SignUp.vue";
 import SignIn from "../components/auth/SignIn.vue";
 import MFAChallenge from "../components/auth/MFAChallenge.vue";
 import ForgotPassword from "../components/auth/ForgotPassword.vue";
-import { ApplicationRoutes, MenuItems } from "../constants";
+import { ApplicationRoutes, MenuItems, OAuthCallbacks } from "../constants";
 import { useGlobalStore } from "../stores/global/index.js";
 
 const globalStore = useGlobalStore();

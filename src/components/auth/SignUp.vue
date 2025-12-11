@@ -69,6 +69,7 @@
 								v-model="signUpFormDataPart1.email"
 								@keydown="blockEmptyInput"
 								@focus="suppressErrors()"
+								:disabled="authProvider != AuthProviderCodes.NONE"
 							>
 								<template #prefix>
 									<font-awesome-icon
@@ -354,7 +355,10 @@
 					:rules="signUpFormDataPart3Rules"
 					class="w-100"
 				>
-					<div class="d-flex gap-3">
+					<div
+						v-if="authProvider === AuthProviderCodes.NONE"
+						class="d-flex gap-3"
+					>
 						<el-form-item class="fb-50" prop="password">
 							<el-input
 								name="password"
@@ -511,14 +515,47 @@
 					</div>
 				</el-form>
 				<div class="d-flex align-items-center gap-2 mt-3">
-					<div class="login-provider" @click="signUpThroughFacebook($event)">
-						<font-awesome-icon :icon="['fab', 'facebook-f']" class="fa-lg" />
+					<div
+						class="login-provider"
+						@click="
+							authProvider === AuthProviderCodes.NONE &&
+								signUpThroughAuthProvider($event, AuthProviderCodes.FACEBOOK)
+						"
+					>
+						<font-awesome-icon
+							:icon="['fab', 'facebook-f']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider === AuthProviderCodes.FACEBOOK,
+								'not-selected':
+									authProvider !== AuthProviderCodes.FACEBOOK &&
+									authProvider !== AuthProviderCodes.NONE,
+							}"
+						/>
 					</div>
 					<div class="login-provider">
-						<font-awesome-icon :icon="['fab', 'google']" class="fa-lg" />
+						<font-awesome-icon
+							:icon="['fab', 'google']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider === AuthProviderCodes.GOOGLE,
+								'not-selected':
+									authProvider !== AuthProviderCodes.GOOGLE &&
+									authProvider !== AuthProviderCodes.NONE,
+							}"
+						/>
 					</div>
 					<div class="login-provider">
-						<font-awesome-icon :icon="['fab', 'linkedin-in']" class="fa-lg" />
+						<font-awesome-icon
+							:icon="['fab', 'linkedin-in']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider === AuthProviderCodes.LINKEDIN,
+								'not-selected':
+									authProvider !== AuthProviderCodes.LINKEDIN &&
+									authProvider !== AuthProviderCodes.NONE,
+							}"
+						/>
 					</div>
 					<div class="flex-grow-1"></div>
 					<div>
@@ -559,6 +596,7 @@ import {
 	Genders,
 	OAuthCallbacks,
 	ApplicationRoutes,
+	AuthProviderCodes,
 } from "../../constants.js";
 import { useGlobalStore } from "../../stores/global/index.js";
 
@@ -570,6 +608,7 @@ const errors = reactive({
 	userAlreadyRegistered: false,
 });
 
+const authProvider = ref(AuthProviderCodes.NONE);
 const genders = [
 	{
 		value: Genders.MALE,
@@ -628,27 +667,31 @@ const validatePhoneNumber = (rule, value, callback) => {
 };
 
 const validatePassword = (rule, value, callback) => {
-	if (!value) {
-		return callback(new Error("Password is required"));
-	}
+	if (authProvider.value === AuthProviderCodes.NONE) {
+		if (!value) {
+			return callback(new Error("Password is required"));
+		}
 
-	const strongPasswordRegex =
-		/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+		const strongPasswordRegex =
+			/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
-	if (!strongPasswordRegex.test(value)) {
-		return callback(new Error("Please specify a strong password"));
+		if (!strongPasswordRegex.test(value)) {
+			return callback(new Error("Please specify a strong password"));
+		}
 	}
 
 	callback();
 };
 
 const validateConfirmPassword = (rule, value, callback) => {
-	if (!value) {
-		return callback(new Error("Please confirm your password"));
-	}
+	if (authProvider.value === AuthProviderCodes.NONE) {
+		if (!value) {
+			return callback(new Error("Please confirm your password"));
+		}
 
-	if (value !== signUpFormDataPart3.password) {
-		return callback(new Error("Passwords do not match"));
+		if (value !== signUpFormDataPart3.password) {
+			return callback(new Error("Passwords do not match"));
+		}
 	}
 
 	callback();
@@ -875,6 +918,7 @@ const signUpFormDataPart3Rules = reactive({
 });
 
 const signUpFormDataPart1 = reactive({
+	providerUserId: null,
 	firstname: "",
 	lastname: "",
 	email: "",
@@ -1067,6 +1111,11 @@ const signUp = async () => {
 			phoneCode: signUpFormDataPart1.phoneCode?.trim(),
 			hasAcceptedTermsAndConditions: signUpFormDataPart3.acceptedTnC,
 			hasAcceptedPrivacyPolicy: signUpFormDataPart3.acceptedPrivacyPolicy,
+			provider:
+				authProvider.value === AuthProviderCodes.NONE
+					? AuthProviderCodes.INTERNAL
+					: authProvider.value,
+			providerUserId: signUpFormDataPart1.providerUserId,
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,
@@ -1103,7 +1152,7 @@ const signUp = async () => {
 	}
 };
 
-const signUpThroughFacebook = async () => {
+const signUpThroughAuthProvider = async (event, provider) => {
 	const redirect = {
 		action: OAuthCallbacks.SIGN_UP,
 		redirectPending: true,
@@ -1112,7 +1161,28 @@ const signUpThroughFacebook = async () => {
 		handshakeWith: ApplicationRoutes.AUTH,
 	};
 	globalStore.setRedirection(redirect);
-	window.location.href = Endpoints.FB_SIGN_UP_REDIRECT_URL;
+	authProvider.value = provider;
+	if (provider === AuthProviderCodes.FACEBOOK) {
+		window.location.href = Endpoints.FB_SIGN_UP_REDIRECT_URL;
+	}
+};
+
+const handshakeWithRedirectionSource = () => {
+	if (
+		globalStore.redirect.signup.handshakePending &&
+		globalStore.redirect.signup.handshakeWith == ApplicationRoutes.AUTH
+	) {
+		globalStore.setRedirection({ action: OAuthCallbacks.SIGN_UP });
+		authProvider.value = globalStore.buffer.authProviderResponse.provider;
+		signUpFormDataPart1.providerUserId =
+			globalStore.buffer.authProviderResponse.id;
+		signUpFormDataPart1.email = globalStore.buffer.authProviderResponse.email;
+		signUpFormDataPart1.firstname =
+			globalStore.buffer.authProviderResponse.firstname;
+		signUpFormDataPart1.lastname =
+			globalStore.buffer.authProviderResponse.lastname;
+		globalStore.setBuffer({ ...globalStore.buffer, authProviderResponse: {} });
+	}
 };
 
 onMounted(() => {
@@ -1124,6 +1194,7 @@ onMounted(() => {
 			fade.value = true;
 		}, 500);
 	}, 4000);
+	handshakeWithRedirectionSource();
 });
 </script>
 
@@ -1157,9 +1228,15 @@ onMounted(() => {
 			padding: 5px 10px;
 		}
 
-		.login-provider:hover {
+		.login-provider:not(:has(.selector, .not-selected)):hover,
+		.login-provider:has(.selected) {
 			background: #000000;
 			color: #ffffff;
+		}
+
+		.login-provider:has(.selected),
+		.login-provider:has(.not-selected) {
+			cursor: not-allowed;
 		}
 
 		.text-btn {
