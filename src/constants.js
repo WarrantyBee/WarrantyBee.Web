@@ -86,6 +86,22 @@ const OAuthCallbacks = Object.freeze({
 	SIGN_IN: "signin",
 });
 
+const ApplicationRoutes = Object.freeze({
+	AUTH: "/",
+	DASHBOARD: "/dashboard",
+	PROFILE: "/profile",
+	NOT_FOUND: "/not-found",
+	OAUTH_CALLBACK: "/oauth/callback",
+});
+
+const ApplicationRouteNames = Object.freeze({
+	AUTH: "Auth",
+	DASHBOARD: "Dashboard",
+	PROFILE: "Profile",
+	NOT_FOUND: "NotFound",
+	OAUTH_CALLBACK: "OAuthCallback",
+});
+
 export {
 	Endpoints,
 	CacheKeys,
@@ -98,4 +114,6 @@ export {
 	MenuItems,
 	AuthProviders,
 	OAuthCallbacks,
+	ApplicationRoutes,
+	ApplicationRouteNames,
 };

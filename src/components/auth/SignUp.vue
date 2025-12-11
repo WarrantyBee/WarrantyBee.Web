@@ -557,6 +557,8 @@ import {
 	ErrorCodes,
 	Endpoints,
 	Genders,
+	OAuthCallbacks,
+	ApplicationRoutes,
 } from "../../constants.js";
 import { useGlobalStore } from "../../stores/global/index.js";
 
@@ -1102,6 +1104,14 @@ const signUp = async () => {
 };
 
 const signUpThroughFacebook = async () => {
+	const redirect = {
+		action: OAuthCallbacks.SIGN_UP,
+		redirectPending: true,
+		handshakePending: true,
+		redirectTo: ApplicationRoutes.OAUTH_CALLBACK,
+		handshakeWith: ApplicationRoutes.AUTH,
+	};
+	globalStore.setRedirection(redirect);
 	window.location.href = Endpoints.FB_SIGN_UP_REDIRECT_URL;
 };
 

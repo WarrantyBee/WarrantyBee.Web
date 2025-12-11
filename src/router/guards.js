@@ -1,4 +1,3 @@
-import { run } from "../utils/promise";
 import { apiRequest } from "../services/api";
 import {
 	HttpMethods,
@@ -6,8 +5,10 @@ import {
 	HttpStatus,
 	AuthProviders,
 	OAuthCallbacks,
+	ApplicationRouteNames,
 } from "../constants";
 import { useGlobalStore } from "../stores/global";
+import { WebError } from "../services/telemetry";
 
 export async function handleOAuthCallback(to, from, next) {
 	if (
@@ -26,19 +27,37 @@ export async function handleOAuthCallback(to, from, next) {
 
 export async function handleFacebookSignUpRedirect(to, from, next) {
 	const globalStore = useGlobalStore();
+	let redirect = {
+		action: OAuthCallbacks.SIGN_UP,
+		...globalStore.redirect.signup,
+		redirectPending: false,
+	};
+	globalStore.setScreenLoader(true, "Taking you to Sign Up page...");
 	const body = {
 		provider: to.query.authProvider,
 		code: to.query.code,
 	};
-	globalStore.setScreenLoader(true, "Taking you to Sign Up page...");
-	// let response = await apiRequest(
-	// 	HttpMethods.POST,
-	// 	Endpoints.GET_PROFILE_THROUGH_OAUTH,
-	// 	body
-	// );
-	if (response?.status === HttpStatus.OK) {
-		//return next({ name: "Auth" });
-	} else {
-		return next({ name: "NotFound" });
+	try {
+		const response = await apiRequest(
+			HttpMethods.POST,
+			Endpoints.GET_PROFILE_THROUGH_OAUTH,
+			body
+		);
+		if (response?.status === HttpStatus.OK) {
+			const buffer = {
+				...globalStore.buffer,
+				authProviderResponse: response.data.data,
+			};
+			globalStore.setBuffer(buffer);
+		} else {
+			throw new WebError("Unexpected response from server.", response);
+		}
+	} catch (error) {
+		redirect = {};
+		notifyError("Oops! Something went wrong. Please try again later.");
+	} finally {
+		globalStore.setScreenLoader(false);
+		globalStore.setRedirection(redirect);
+		return next({ name: ApplicationRouteNames.AUTH });
 	}
 }

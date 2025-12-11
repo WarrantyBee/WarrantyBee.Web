@@ -13,4 +13,13 @@ export const state = () => ({
 		active: false,
 		text: "Loading",
 	},
+	redirect: {
+		signup: {
+			redirectPending: false,
+			handshakePending: false,
+			redirectTo: null,
+			handshakeWith: null,
+		},
+	},
+	buffer: {},
 });
