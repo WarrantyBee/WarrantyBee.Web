@@ -76,6 +76,11 @@ const setUserProfile = function (profile) {
 	}
 };
 
+const setScreenLoader = function (active, text = "Loading") {
+	this.screenLoader.active = active;
+	this.screenLoader.text = text;
+};
+
 export const actions = {
 	setUser,
 	setAccessToken,
@@ -86,4 +91,5 @@ export const actions = {
 	setCultures,
 	setPhoneCodes,
 	setUserProfile,
+	setScreenLoader,
 };

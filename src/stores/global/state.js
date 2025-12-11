@@ -9,4 +9,8 @@ export const state = () => ({
 	cultures: null,
 	phoneCodes: null,
 	loading: false,
+	screenLoader: {
+		active: false,
+		text: "Loading",
+	},
 });

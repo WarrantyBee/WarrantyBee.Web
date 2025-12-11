@@ -5,15 +5,10 @@ import ProfilePage from "../pages/ProfilePage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
 import { apiRequest } from "../services/api";
 import { WebError } from "../services/telemetry";
-import {
-	HttpMethods,
-	CacheKeys,
-	Endpoints,
-	HttpStatus,
-	AuthProviders,
-	OAuthCallbacks,
-} from "../constants";
+import { HttpMethods, CacheKeys, Endpoints, HttpStatus } from "../constants";
 import { useGlobalStore } from "../stores/global/index";
+import LoadingScreen from "../components/LoadingScreen.vue";
+import { handleOAuthCallback } from "./guards";
 
 const routes = [
 	{
@@ -36,11 +31,22 @@ const routes = [
 		name: "NotFound",
 		component: NotFoundPage,
 	},
+	{
+		path: "/oauth/callback",
+		name: "OAuthCallback",
+		component: LoadingScreen,
+	},
 ];
 
 const router = createRouter({
 	history: createWebHistory(),
 	routes,
+});
+
+router.afterEach(async (to, from, next) => {
+	if (to.name === "OAuthCallback") {
+		await handleOAuthCallback(to, from, next);
+	}
 });
 
 router.beforeEach(async (to, from, next) => {
@@ -115,34 +121,14 @@ router.beforeEach(async (to, from, next) => {
 	};
 
 	if (to.matched.length === 0) {
-		if (to.fullPath?.startsWith("/oauth/callback")) {
-			if (
-				Object.values(AuthProviders).includes(to.query.authProvider) &&
-				Object.values(OAuthCallbacks).includes(to.query.action) &&
-				to.query.code
-			) {
-				if (to.query.authProvider === AuthProviders.FACEBOOK) {
-					const body = {
-						provider: to.query.authProvider,
-						code: to.query.code,
-					};
-					setTimeout(async () => {
-						const response = await apiRequest(
-							HttpMethods.POST,
-							Endpoints.GET_PROFILE_THROUGH_OAUTH,
-							body
-						);
-					}, 2000);
-				}
-				if (to.query.action === OAuthCallbacks.SIGN_UP) {
-					// logic to redirect to sign up component
-				}
-			}
-		}
 		return next({ name: "NotFound" });
 	}
 
 	if (to.name === "NotFound") {
+		next();
+	}
+
+	if (to.fullPath?.startsWith("/oauth/callback")) {
 		next();
 	}
 

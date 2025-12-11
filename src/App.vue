@@ -8,7 +8,7 @@
 
 <script setup>
 import { ElNotification } from "element-plus";
-import { loadRecaptcha, getRecaptchaToken } from "./services/recaptcha";
+import { loadRecaptcha } from "./services/recaptcha";
 import { computed, onMounted, ref } from "vue";
 import { Events, NotificationTypes } from "./constants";
 import { useGlobalStore } from "./stores/global/index";
