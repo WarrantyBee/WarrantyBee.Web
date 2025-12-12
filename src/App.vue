@@ -9,7 +9,7 @@
 <script setup>
 import { ElNotification } from "element-plus";
 import { loadRecaptcha } from "./services/recaptcha";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUpdated } from "vue";
 import { Events, NotificationTypes } from "./constants";
 import { useGlobalStore } from "./stores/global/index";
 import { useI18n } from "vue-i18n";
@@ -47,9 +47,7 @@ const notifyError = (message) => {
 	);
 };
 
-onMounted(async () => {
-	globalStore.setLoader(true);
-	await loadRecaptcha();
+const setupNotificationHandlers = () => {
 	window.notifySuccess = notifySuccess;
 	window.notifyError = notifyError;
 	document.body.addEventListener(Events.ON_SUCCESS, (e) =>
@@ -58,6 +56,16 @@ onMounted(async () => {
 	document.body.addEventListener(Events.ON_ERROR, (e) =>
 		showErrorNotification(e.detail.message)
 	);
+};
+
+onUpdated(() => {
+	setupNotificationHandlers();
+});
+
+onMounted(async () => {
+	globalStore.setLoader(true);
+	await loadRecaptcha();
+	setupNotificationHandlers();
 	globalStore.setLoader(false);
 });
 </script>

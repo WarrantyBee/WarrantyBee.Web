@@ -1111,11 +1111,11 @@ const signUp = async () => {
 			phoneCode: signUpFormDataPart1.phoneCode?.trim(),
 			hasAcceptedTermsAndConditions: signUpFormDataPart3.acceptedTnC,
 			hasAcceptedPrivacyPolicy: signUpFormDataPart3.acceptedPrivacyPolicy,
-			provider:
+			authProvider:
 				authProvider.value === AuthProviderCodes.NONE
 					? AuthProviderCodes.INTERNAL
 					: authProvider.value,
-			providerUserId: signUpFormDataPart1.providerUserId,
+			authProviderUserId: signUpFormDataPart1.providerUserId,
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,
@@ -1153,6 +1153,7 @@ const signUp = async () => {
 };
 
 const signUpThroughAuthProvider = async (event, provider) => {
+	globalStore.setLoader(true);
 	const redirect = {
 		action: OAuthCallbacks.SIGN_UP,
 		redirectPending: true,

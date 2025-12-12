@@ -56,6 +56,7 @@ export async function handleFacebookSignUpRedirect(to) {
 		redirect = {};
 		notifyError("Oops! Something went wrong. Please try again later.");
 	} finally {
+		globalStore.setLoader(false);
 		globalStore.setScreenLoader(false);
 		globalStore.setRedirection(redirect);
 		router.push({ name: ApplicationRouteNames.AUTH });
