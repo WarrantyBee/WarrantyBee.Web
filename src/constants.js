@@ -9,8 +9,8 @@ const Endpoints = Object.freeze({
 	CHANGE_PROFILE_PICTURE: "/users/profile/changeavatar",
 	GET_PROFILE_THROUGH_OAUTH: "oauth/profile",
 	UPDATE_USER_PROFILE: "/users/profile",
-
 	FB_SIGN_UP_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_UP_REDIRECT_URL,
+	FB_SIGN_IN_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_IN_REDIRECT_URL,
 });
 
 const CacheKeys = Object.freeze({
@@ -102,6 +102,11 @@ const OAuthCallbacks = Object.freeze({
 	SIGN_IN: "signin",
 });
 
+const OAuthCallbackTypes = Object.freeze({
+	[OAuthCallbacks.SIGN_UP]: 1,
+	[OAuthCallbacks.SIGN_IN]: 2,
+});
+
 const ApplicationRoutes = Object.freeze({
 	AUTH: "/",
 	DASHBOARD: "/dashboard",
@@ -116,6 +121,11 @@ const ApplicationRouteNames = Object.freeze({
 	PROFILE: "Profile",
 	NOT_FOUND: "NotFound",
 	OAUTH_CALLBACK: "OAuthCallback",
+});
+
+const ScreenLoaderLabels = Object.freeze({
+	[OAuthCallbacks.SIGN_UP]: "Taking you to Sign Up page...",
+	[OAuthCallbacks.SIGN_IN]: "Signing in is in progress...",
 });
 
 export {
@@ -134,4 +144,6 @@ export {
 	OAuthCallbacks,
 	ApplicationRoutes,
 	ApplicationRouteNames,
+	ScreenLoaderLabels,
+	OAuthCallbackTypes,
 };

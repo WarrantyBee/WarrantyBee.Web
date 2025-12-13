@@ -6,16 +6,52 @@
 			<div class="d-flex justify-content-center">
 				<h1 class="poppins-semibold">Sign in to WarrantyBee</h1>
 			</div>
-			<div class="d-flex mt-4 login-providers justify-content-center">
+			<div class="d-flex mt-4 auth-providers justify-content-center">
 				<div class="d-flex gap-3">
-					<div class="icon">
-						<font-awesome-icon :icon="['fab', 'facebook-f']" class="fa-lg" />
+					<div
+						class="auth-provider"
+						@click="
+							authProvider === AuthProviderCodes.NONE &&
+								signInThroughAuthProvider($event, AuthProviderCodes.FACEBOOK)
+						"
+					>
+						<font-awesome-icon
+							:icon="['fab', 'facebook-f']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider == AuthProviderCodes.FACEBOOK,
+								'not-selected': ![
+									AuthProviderCodes.NONE,
+									AuthProviderCodes.FACEBOOK,
+								].includes(authProvider),
+							}"
+						/>
 					</div>
-					<div class="icon">
-						<font-awesome-icon :icon="['fab', 'google']" class="fa-lg" />
+					<div class="auth-provider">
+						<font-awesome-icon
+							:icon="['fab', 'google']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider == AuthProviderCodes.GOOGLE,
+								'not-selected': ![
+									AuthProviderCodes.NONE,
+									AuthProviderCodes.GOOGLE,
+								].includes(authProvider),
+							}"
+						/>
 					</div>
-					<div class="icon">
-						<font-awesome-icon :icon="['fab', 'linkedin-in']" class="fa-lg" />
+					<div class="auth-provider">
+						<font-awesome-icon
+							:icon="['fab', 'linkedin-in']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider == AuthProviderCodes.LINKEDIN,
+								'not-selected': ![
+									AuthProviderCodes.NONE,
+									AuthProviderCodes.LINKEDIN,
+								].includes(authProvider),
+							}"
+						/>
 					</div>
 				</div>
 			</div>
@@ -125,6 +161,9 @@ import {
 	ErrorCodes,
 	Endpoints,
 	CacheKeys,
+	OAuthCallbacks,
+	AuthProviderCodes,
+	ApplicationRoutes,
 } from "../../constants.js";
 import { useGlobalStore } from "../../stores/global/index.js";
 import { useI18n } from "vue-i18n";
@@ -138,6 +177,7 @@ const emit = defineEmits([
 	"sign-in-success",
 ]);
 
+const authProvider = ref(AuthProviderCodes.INTERNAL);
 const signInFormRef = ref();
 const signingIn = ref(false);
 const signInFormData = reactive({
@@ -251,6 +291,22 @@ const signIn = async () => {
 		throw error;
 	}
 };
+
+const signInThroughAuthProvider = async (event, provider) => {
+	globalStore.setLoader(true);
+	const redirect = {
+		action: OAuthCallbacks.SIGN_IN,
+		redirectPending: true,
+		handshakePending: true,
+		redirectTo: ApplicationRoutes.OAUTH_CALLBACK,
+		handshakeWith: ApplicationRoutes.AUTH,
+	};
+	globalStore.setRedirection(redirect);
+	authProvider.value = provider;
+	if (provider === AuthProviderCodes.FACEBOOK) {
+		window.location.href = Endpoints.FB_SIGN_IN_REDIRECT_URL;
+	}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -258,17 +314,23 @@ const signIn = async () => {
 	padding: 60px 40px;
 
 	.component-sub-container {
-		.login-providers {
-			div.icon {
+		.auth-providers {
+			.auth-provider {
+				cursor: pointer;
 				padding: 10px;
 				border-radius: 50%;
 				border: 0.5px solid;
 			}
 
-			div.icon:hover {
-				cursor: pointer;
-				background-color: #000000;
+			.auth-provider:not(:has(.selected, .not-selected)):hover,
+			.auth-provider:has(.selected) {
+				background: #000000;
 				color: #ffffff;
+			}
+
+			.auth-provider:has(.selected),
+			.auth-provider:has(.not-selected) {
+				cursor: not-allowed;
 			}
 		}
 

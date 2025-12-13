@@ -20,6 +20,12 @@ export const state = () => ({
 			redirectTo: null,
 			handshakeWith: null,
 		},
+		signin: {
+			redirectPending: false,
+			handshakePending: false,
+			redirectTo: null,
+			handshakeWith: null,
+		},
 	},
 	buffer: {},
 });

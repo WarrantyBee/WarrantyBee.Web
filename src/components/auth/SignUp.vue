@@ -516,7 +516,7 @@
 				</el-form>
 				<div class="d-flex align-items-center gap-2 mt-3">
 					<div
-						class="login-provider"
+						class="auth-provider"
 						@click="
 							authProvider === AuthProviderCodes.NONE &&
 								signUpThroughAuthProvider($event, AuthProviderCodes.FACEBOOK)
@@ -533,7 +533,7 @@
 							}"
 						/>
 					</div>
-					<div class="login-provider">
+					<div class="auth-provider">
 						<font-awesome-icon
 							:icon="['fab', 'google']"
 							class="fa-lg"
@@ -545,7 +545,7 @@
 							}"
 						/>
 					</div>
-					<div class="login-provider">
+					<div class="auth-provider">
 						<font-awesome-icon
 							:icon="['fab', 'linkedin-in']"
 							class="fa-lg"
@@ -1222,21 +1222,21 @@ onMounted(() => {
 			background-color: #ffffff;
 		}
 
-		.login-provider {
+		.auth-provider {
 			cursor: pointer;
 			border: 1px solid #000000;
 			border-radius: 8px;
 			padding: 5px 10px;
 		}
 
-		.login-provider:not(:has(.selector, .not-selected)):hover,
-		.login-provider:has(.selected) {
+		.auth-provider:not(:has(.selected, .not-selected)):hover,
+		.auth-provider:has(.selected) {
 			background: #000000;
 			color: #ffffff;
 		}
 
-		.login-provider:has(.selected),
-		.login-provider:has(.not-selected) {
+		.auth-provider:has(.selected),
+		.auth-provider:has(.not-selected) {
 			cursor: not-allowed;
 		}
 

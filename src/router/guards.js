@@ -7,6 +7,8 @@ import {
 	OAuthCallbacks,
 	ApplicationRouteNames,
 	AuthProviderCodes,
+	ScreenLoaderLabels,
+	OAuthCallbackTypes,
 } from "../constants";
 import { useGlobalStore } from "../stores/global";
 import { WebError } from "../services/telemetry";
@@ -28,14 +30,15 @@ export async function handleFacebookSignUpRedirect(to) {
 	const globalStore = useGlobalStore();
 	const router = useRouter();
 	let redirect = {
-		action: OAuthCallbacks.SIGN_UP,
-		...globalStore.redirect.signup,
+		action: to.query.action,
+		...globalStore.redirect[to.query.action],
 		redirectPending: false,
 	};
-	globalStore.setScreenLoader(true, "Taking you to Sign Up page...");
+	globalStore.setScreenLoader(true, ScreenLoaderLabels[to.query.action]);
 	const body = {
 		provider: AuthProviderCodes[to.query.authProvider.toUpperCase()],
 		code: to.query.code,
+		callbackType: OAuthCallbackTypes[to.query.action],
 	};
 	try {
 		const response = await apiRequest(
@@ -53,7 +56,7 @@ export async function handleFacebookSignUpRedirect(to) {
 			throw new WebError("Unexpected response from server.", response);
 		}
 	} catch (error) {
-		redirect = {};
+		redirect = { action: to.query.action };
 		notifyError("Oops! Something went wrong. Please try again later.");
 	} finally {
 		globalStore.setLoader(false);
