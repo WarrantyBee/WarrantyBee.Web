@@ -5,35 +5,56 @@ import ProfilePage from "../pages/ProfilePage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
 import { apiRequest } from "../services/api";
 import { WebError } from "../services/telemetry";
-import { HttpMethods, CacheKeys, Endpoints, HttpStatus } from "../constants";
+import {
+	HttpMethods,
+	CacheKeys,
+	Endpoints,
+	HttpStatus,
+	OAuthCallbacks,
+	ApplicationRoutes,
+	ApplicationRouteNames,
+} from "../constants";
 import { useGlobalStore } from "../stores/global/index";
+import LoadingScreen from "../components/LoadingScreen.vue";
+import { handleOAuthCallback } from "./guards";
 
 const routes = [
 	{
-		path: "/",
-		name: "Auth",
+		path: ApplicationRoutes.AUTH,
+		name: ApplicationRouteNames.AUTH,
 		component: AuthPage,
 	},
 	{
-		path: "/dashboard",
-		name: "Dashboard",
+		path: ApplicationRoutes.DASHBOARD,
+		name: ApplicationRouteNames.DASHBOARD,
 		component: DashboardPage,
 	},
 	{
-		path: "/profile",
-		name: "Profile",
+		path: ApplicationRoutes.PROFILE,
+		name: ApplicationRouteNames.PROFILE,
 		component: ProfilePage,
 	},
 	{
-		path: "/not-found",
-		name: "NotFound",
+		path: ApplicationRoutes.NOT_FOUND,
+		name: ApplicationRouteNames.NOT_FOUND,
 		component: NotFoundPage,
+	},
+	{
+		path: ApplicationRoutes.OAUTH_CALLBACK,
+		name: ApplicationRouteNames.OAUTH_CALLBACK,
+		component: LoadingScreen,
 	},
 ];
 
 const router = createRouter({
 	history: createWebHistory(),
 	routes,
+});
+
+router.afterEach((to) => {
+	if (to.name === "OAuthCallback") {
+		handleOAuthCallback(to);
+	}
 });
 
 router.beforeEach(async (to, from, next) => {
@@ -113,6 +134,17 @@ router.beforeEach(async (to, from, next) => {
 
 	if (to.name === "NotFound") {
 		next();
+	}
+
+	if (to.fullPath?.startsWith("/oauth/callback")) {
+		if (
+			Object.values(OAuthCallbacks).includes(to.query.action) &&
+			globalStore.redirect[to.query.action].redirectPending
+		) {
+			next();
+		} else {
+			return next({ name: "NotFound" });
+		}
 	}
 
 	if (to.name !== "Auth") {

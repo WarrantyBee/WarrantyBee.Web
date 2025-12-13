@@ -1,4 +1,4 @@
-const Endpoints = {
+const Endpoints = Object.freeze({
 	ALIVE: "/alive",
 	COUNTRIES: "/countries",
 	SIGN_UP: "/auth/signup",
@@ -7,48 +7,51 @@ const Endpoints = {
 	RESET_PASSWORD: "/auth/resetpassword",
 	GET_USER_PROFILE: "/users/profile",
 	CHANGE_PROFILE_PICTURE: "/users/profile/changeavatar",
+	GET_PROFILE_THROUGH_OAUTH: "oauth/profile",
 	UPDATE_USER_PROFILE: "/users/profile",
-};
+	FB_SIGN_UP_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_UP_REDIRECT_URL,
+	FB_SIGN_IN_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_IN_REDIRECT_URL,
+});
 
-const CacheKeys = {
+const CacheKeys = Object.freeze({
 	ACCESS_TOKEN: `_WARRANTYBEE_API_ACCESS_TOKEN_${window.location.hostname.toUpperCase()}`,
-};
+});
 
-const MenuItems = {
+const MenuItems = Object.freeze({
 	DASHBOARD: "1",
 	PRODUCTS: "2",
 	WARRANTIES: "3",
 	MY_PROFILE: "4-1",
 	SIGN_OUT: "4-2",
-};
+});
 
-const HttpMethods = {
+const HttpMethods = Object.freeze({
 	GET: "GET",
 	POST: "POST",
 	PUT: "PUT",
 	DELETE: "DELETE",
 	PATCH: "PATCH",
-};
+});
 
-const Genders = {
+const Genders = Object.freeze({
 	MALE: 1,
 	FEMALE: 2,
 	PREFER_NOT_TO_SAY: 3,
-};
+});
 
-const NotificationTypes = {
+const NotificationTypes = Object.freeze({
 	INFO: "info",
 	SUCCESS: "success",
 	WARNING: "warning",
 	ERROR: "error",
-};
+});
 
-const Events = {
+const Events = Object.freeze({
 	ON_SUCCESS: "on-success",
 	ON_ERROR: "on-error",
-};
+});
 
-const HttpStatus = {
+const HttpStatus = Object.freeze({
 	OK: 200,
 	CREATED: 201,
 	NO_CONTENT: 204,
@@ -61,16 +64,69 @@ const HttpStatus = {
 	INTERNAL_SERVER_ERROR: 500,
 	BAD_GATEWAY: 502,
 	SERVICE_UNAVAILABLE: 503,
-};
+});
 
-const ErrorCodes = {
+const ErrorCodes = Object.freeze({
 	INVALID_CREDENTIALS: 1002,
 	USER_NOT_REGISTERED: 1016,
 	USER_ALREADY_REGISTERED: 1017,
 	INVALID_OTP: 1034,
 	PASSWORD_RECENTLY_UPDATED: 1049,
 	PASSWORD_ALREADY_USED: 1050,
-};
+});
+
+const AuthProviders = Object.freeze({
+	INTERNAL: "internal",
+	FACEBOOK: "facebook",
+	GOOGLE: "google",
+	LINKEDIN: "linkedin",
+});
+
+const AuthProviderCodes = Object.freeze({
+	NONE: 0,
+	INTERNAL: 1,
+	FACEBOOK: 2,
+	GOOGLE: 3,
+	LINKEDIN: 4,
+});
+
+const AuthProviderNames = Object.freeze({
+	1: AuthProviders.INTERNAL,
+	2: AuthProviders.FACEBOOK,
+	3: AuthProviders.GOOGLE,
+	4: AuthProviders.LINKEDIN,
+});
+
+const OAuthCallbacks = Object.freeze({
+	SIGN_UP: "signup",
+	SIGN_IN: "signin",
+});
+
+const OAuthCallbackTypes = Object.freeze({
+	[OAuthCallbacks.SIGN_UP]: 1,
+	[OAuthCallbacks.SIGN_IN]: 2,
+});
+
+const ApplicationRoutes = Object.freeze({
+	AUTH: "/",
+	DASHBOARD: "/dashboard",
+	PROFILE: "/profile",
+	NOT_FOUND: "/not-found",
+	OAUTH_CALLBACK: "/oauth/callback",
+});
+
+const ApplicationRouteNames = Object.freeze({
+	AUTH: "Auth",
+	DASHBOARD: "Dashboard",
+	PROFILE: "Profile",
+	NOT_FOUND: "NotFound",
+	OAUTH_CALLBACK: "OAuthCallback",
+});
+
+const ScreenLoaderLabels = Object.freeze({
+	[OAuthCallbacks.SIGN_UP]: "Taking you to Sign Up page...",
+	[OAuthCallbacks.SIGN_IN]: "Signing in is in progress...",
+});
 
 export {
 	Endpoints,
@@ -82,4 +138,12 @@ export {
 	ErrorCodes,
 	Genders,
 	MenuItems,
+	AuthProviders,
+	AuthProviderCodes,
+	AuthProviderNames,
+	OAuthCallbacks,
+	ApplicationRoutes,
+	ApplicationRouteNames,
+	ScreenLoaderLabels,
+	OAuthCallbackTypes,
 };
