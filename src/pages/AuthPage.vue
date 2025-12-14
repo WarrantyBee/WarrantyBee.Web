@@ -29,13 +29,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import SignUp from "../components/auth/SignUp.vue";
 import SignIn from "../components/auth/SignIn.vue";
 import MFAChallenge from "../components/auth/MFAChallenge.vue";
 import ForgotPassword from "../components/auth/ForgotPassword.vue";
-import { MenuItems } from "../constants";
+import { ApplicationRoutes, MenuItems, OAuthCallbacks } from "../constants";
 import { useGlobalStore } from "../stores/global/index.js";
 
 const globalStore = useGlobalStore();
@@ -52,6 +52,8 @@ const signInFormData = ref({
 	email: "",
 	password: "",
 	loginToken: "",
+	authProvider: null,
+	authProviderUserId: null,
 });
 
 const redirectToMfaFlow = (data) => {
@@ -63,6 +65,21 @@ const redirectToDashboard = () => {
 	globalStore.setSelectedMenu(MenuItems.DASHBOARD);
 	router.push("/dashboard");
 };
+
+onMounted(() => {
+	if (
+		globalStore.redirect.signup.handshakePending &&
+		globalStore.redirect.signup.handshakeWith == ApplicationRoutes.AUTH
+	) {
+		activeComponent.value = AuthPageComponents.SIGN_UP;
+	}
+	if (
+		globalStore.redirect.signin.handshakePending &&
+		globalStore.redirect.signin.handshakeWith == ApplicationRoutes.AUTH
+	) {
+		activeComponent.value = AuthPageComponents.SIGN_IN;
+	}
+});
 </script>
 
 <style lang="scss" scoped>

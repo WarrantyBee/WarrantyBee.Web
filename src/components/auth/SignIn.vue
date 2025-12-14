@@ -6,16 +6,49 @@
 			<div class="d-flex justify-content-center">
 				<h1 class="poppins-semibold">Sign in to WarrantyBee</h1>
 			</div>
-			<div class="d-flex mt-4 login-providers justify-content-center">
+			<div class="d-flex mt-4 auth-providers justify-content-center">
 				<div class="d-flex gap-3">
-					<div class="icon">
-						<font-awesome-icon :icon="['fab', 'facebook-f']" class="fa-lg" />
+					<div
+						class="auth-provider"
+						@click="
+							authProvider === AuthProviderCodes.NONE &&
+								signInThroughAuthProvider($event, AuthProviderCodes.FACEBOOK)
+						"
+					>
+						<font-awesome-icon
+							:icon="['fab', 'facebook-f']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider == AuthProviderCodes.FACEBOOK,
+								'not-selected': isAuthProviderNotSelected(
+									AuthProviderCodes.FACEBOOK
+								),
+							}"
+						/>
 					</div>
-					<div class="icon">
-						<font-awesome-icon :icon="['fab', 'google']" class="fa-lg" />
+					<div class="auth-provider">
+						<font-awesome-icon
+							:icon="['fab', 'google']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider == AuthProviderCodes.GOOGLE,
+								'not-selected': isAuthProviderNotSelected(
+									AuthProviderCodes.GOOGLE
+								),
+							}"
+						/>
 					</div>
-					<div class="icon">
-						<font-awesome-icon :icon="['fab', 'linkedin-in']" class="fa-lg" />
+					<div class="auth-provider">
+						<font-awesome-icon
+							:icon="['fab', 'linkedin-in']"
+							class="fa-lg"
+							:class="{
+								selected: authProvider == AuthProviderCodes.LINKEDIN,
+								'not-selected': isAuthProviderNotSelected(
+									AuthProviderCodes.LINKEDIN
+								),
+							}"
+						/>
 					</div>
 				</div>
 			</div>
@@ -117,7 +150,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, defineEmits, toRaw } from "vue";
+import { reactive, ref, defineEmits, toRaw, onMounted } from "vue";
 import { apiRequest } from "../../services/api.js";
 import {
 	HttpMethods,
@@ -125,14 +158,16 @@ import {
 	ErrorCodes,
 	Endpoints,
 	CacheKeys,
+	OAuthCallbacks,
+	AuthProviderCodes,
+	ApplicationRoutes,
+	SignInTypes,
 } from "../../constants.js";
-import { useRouter } from "vue-router";
 import { useGlobalStore } from "../../stores/global/index.js";
 import { useI18n } from "vue-i18n";
 
 const { locale } = useI18n();
 const globalStore = useGlobalStore();
-const router = useRouter();
 const emit = defineEmits([
 	"mfa-sign-in",
 	"forgot-password",
@@ -140,15 +175,12 @@ const emit = defineEmits([
 	"sign-in-success",
 ]);
 
+const authProvider = ref(AuthProviderCodes.NONE);
 const signInFormRef = ref();
 const signingIn = ref(false);
 const signInFormData = reactive({
 	email: "",
 	password: "",
-});
-const LoginTypes = reactive({
-	SIMPLE: "login",
-	MFA: "mfa",
 });
 const signInFormRules = reactive({
 	email: [
@@ -196,9 +228,10 @@ const signIn = async () => {
 		hasFormValidationError = false;
 		signingIn.value = true;
 		const requestBody = {
-			type: LoginTypes.SIMPLE,
+			type: SignInTypes.SIMPLE,
 			email: signInFormData.email?.trim(),
 			password: signInFormData.password?.trim(),
+			authProvider: AuthProviderCodes.INTERNAL,
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,
@@ -214,13 +247,10 @@ const signIn = async () => {
 						email: signInFormData.email,
 						password: signInFormData.password,
 						loginToken: data.loginToken,
+						authProvider: AuthProviderCodes.INTERNAL,
 					});
 				} else if (data?.accessToken) {
-					localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
-					globalStore.setUser(data.user);
-					globalStore.setAccessToken(data.accessToken);
-					locale.value = data.user.profile.culture.iso;
-					emit("sign-in-success");
+					postSignIn(data);
 				} else {
 					throw new this.$WebError(
 						"Access token or login token not found in response.",
@@ -253,6 +283,80 @@ const signIn = async () => {
 		throw error;
 	}
 };
+
+const signInThroughAuthProvider = async (event, provider) => {
+	globalStore.setLoader(true);
+	suppressErrors();
+	const redirect = {
+		action: OAuthCallbacks.SIGN_IN,
+		redirectPending: true,
+		handshakePending: true,
+		redirectTo: ApplicationRoutes.OAUTH_CALLBACK,
+		handshakeWith: ApplicationRoutes.AUTH,
+	};
+	globalStore.setRedirection(redirect);
+	authProvider.value = provider;
+	if (provider === AuthProviderCodes.FACEBOOK) {
+		window.location.href = Endpoints.FB_SIGN_IN_REDIRECT_URL;
+	}
+};
+
+const handshakeWithRedirectionSource = () => {
+	if (
+		globalStore.redirect.signin.handshakePending &&
+		globalStore.redirect.signin.handshakeWith == ApplicationRoutes.AUTH
+	) {
+		globalStore.setRedirection({ action: OAuthCallbacks.SIGN_IN });
+		if (globalStore.buffer.loginResponse?.wrongEmailOrPassword) {
+			errors.wrongEmailOrPassword = true;
+		}
+		if (globalStore.buffer.loginResponse?.userNotRegistered) {
+			errors.userNotRegistered = true;
+		}
+		if (globalStore.buffer.loginResponse?.accessToken) {
+			postSignIn(globalStore.buffer.loginResponse);
+		}
+		if (globalStore.buffer.loginResponse?.loginToken) {
+			emit("mfa-sign-in", {
+				email: globalStore.buffer.authProviderResponse.email,
+				password: null,
+				loginToken: globalStore.buffer.loginResponse.loginToken,
+				authProvider: globalStore.buffer.authProviderResponse.authProvider,
+				authProviderUserId: globalStore.buffer.authProviderResponse.id,
+			});
+		}
+		globalStore.setBuffer({
+			...globalStore.buffer,
+			authProviderResponse: {},
+			loginResponse: {},
+		});
+	}
+};
+
+const postSignIn = (data) => {
+	localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
+	globalStore.setUser(data.user);
+	globalStore.setAccessToken(data.accessToken);
+	locale.value = data.user.profile.culture.iso;
+	emit("sign-in-success");
+};
+
+const isAuthProviderNotSelected = (provider) => {
+	return Object.values(AuthProviderCodes)
+		.filter(
+			(v) =>
+				![
+					AuthProviderCodes.NONE,
+					AuthProviderCodes.INTERNAL,
+					provider,
+				].includes(v)
+		)
+		.includes(authProvider);
+};
+
+onMounted(() => {
+	handshakeWithRedirectionSource();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -260,17 +364,23 @@ const signIn = async () => {
 	padding: 60px 40px;
 
 	.component-sub-container {
-		.login-providers {
-			div.icon {
+		.auth-providers {
+			.auth-provider {
+				cursor: pointer;
 				padding: 10px;
 				border-radius: 50%;
 				border: 0.5px solid;
 			}
 
-			div.icon:hover {
-				cursor: pointer;
-				background-color: #000000;
+			.auth-provider:not(:has(.selected, .not-selected)):hover,
+			.auth-provider:has(.selected) {
+				background: #000000;
 				color: #ffffff;
+			}
+
+			.auth-provider:has(.selected),
+			.auth-provider:has(.not-selected) {
+				cursor: not-allowed;
 			}
 		}
 

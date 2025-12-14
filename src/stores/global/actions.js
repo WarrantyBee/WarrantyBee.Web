@@ -1,3 +1,5 @@
+import { OAuthCallbacks } from "../../constants";
+
 const setUser = function (user) {
 	this.user = user;
 };
@@ -76,6 +78,30 @@ const setUserProfile = function (profile) {
 	}
 };
 
+const setScreenLoader = function (active, text = "Loading") {
+	this.screenLoader.active = active;
+	this.screenLoader.text = text;
+};
+
+const setRedirection = function ({
+	action = null,
+	redirectPending = false,
+	handshakePending = false,
+	redirectTo = null,
+	handshakeWith = null,
+}) {
+	if (Object.values(OAuthCallbacks).includes(action)) {
+		this.redirect[action].redirectPending = redirectPending;
+		this.redirect[action].handshakePending = handshakePending;
+		this.redirect[action].redirectTo = redirectTo;
+		this.redirect[action].handshakeWith = handshakeWith;
+	}
+};
+
+const setBuffer = function (buffer) {
+	this.buffer = buffer;
+};
+
 export const actions = {
 	setUser,
 	setAccessToken,
@@ -86,4 +112,7 @@ export const actions = {
 	setCultures,
 	setPhoneCodes,
 	setUserProfile,
+	setScreenLoader,
+	setRedirection,
+	setBuffer,
 };

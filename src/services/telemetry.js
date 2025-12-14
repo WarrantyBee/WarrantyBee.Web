@@ -67,7 +67,7 @@ class TelemetryService {
 				  });
 
 		const payload = {
-			source: "frontend",
+			source: "WarrantyBee.Web",
 			level: "error",
 			message: err.message,
 			context: {
@@ -82,7 +82,7 @@ class TelemetryService {
 
 	async logEvent(eventName, payload = {}) {
 		const data = {
-			source: "frontend",
+			source: "WarrantyBee.Web",
 			level: "info",
 			message: `Event: ${eventName}`,
 			context: {
