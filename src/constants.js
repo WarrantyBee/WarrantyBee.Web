@@ -128,6 +128,11 @@ const ScreenLoaderLabels = Object.freeze({
 	[OAuthCallbacks.SIGN_IN]: "Signing in is in progress...",
 });
 
+const SignInTypes = Object.freeze({
+	SIMPLE: "simple",
+	MFA: "mfa",
+});
+
 export {
 	Endpoints,
 	CacheKeys,
@@ -146,4 +151,5 @@ export {
 	ApplicationRouteNames,
 	ScreenLoaderLabels,
 	OAuthCallbackTypes,
+	SignInTypes,
 };

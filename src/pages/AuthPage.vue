@@ -52,6 +52,8 @@ const signInFormData = ref({
 	email: "",
 	password: "",
 	loginToken: "",
+	authProvider: null,
+	authProviderUserId: null,
 });
 
 const redirectToMfaFlow = (data) => {
@@ -70,6 +72,12 @@ onMounted(() => {
 		globalStore.redirect.signup.handshakeWith == ApplicationRoutes.AUTH
 	) {
 		activeComponent.value = AuthPageComponents.SIGN_UP;
+	}
+	if (
+		globalStore.redirect.signin.handshakePending &&
+		globalStore.redirect.signin.handshakeWith == ApplicationRoutes.AUTH
+	) {
+		activeComponent.value = AuthPageComponents.SIGN_IN;
 	}
 });
 </script>

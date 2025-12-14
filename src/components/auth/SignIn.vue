@@ -20,10 +20,9 @@
 							class="fa-lg"
 							:class="{
 								selected: authProvider == AuthProviderCodes.FACEBOOK,
-								'not-selected': ![
-									AuthProviderCodes.NONE,
-									AuthProviderCodes.FACEBOOK,
-								].includes(authProvider),
+								'not-selected': isAuthProviderNotSelected(
+									AuthProviderCodes.FACEBOOK
+								),
 							}"
 						/>
 					</div>
@@ -33,10 +32,9 @@
 							class="fa-lg"
 							:class="{
 								selected: authProvider == AuthProviderCodes.GOOGLE,
-								'not-selected': ![
-									AuthProviderCodes.NONE,
-									AuthProviderCodes.GOOGLE,
-								].includes(authProvider),
+								'not-selected': isAuthProviderNotSelected(
+									AuthProviderCodes.GOOGLE
+								),
 							}"
 						/>
 					</div>
@@ -46,10 +44,9 @@
 							class="fa-lg"
 							:class="{
 								selected: authProvider == AuthProviderCodes.LINKEDIN,
-								'not-selected': ![
-									AuthProviderCodes.NONE,
-									AuthProviderCodes.LINKEDIN,
-								].includes(authProvider),
+								'not-selected': isAuthProviderNotSelected(
+									AuthProviderCodes.LINKEDIN
+								),
 							}"
 						/>
 					</div>
@@ -153,7 +150,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, defineEmits, toRaw } from "vue";
+import { reactive, ref, defineEmits, toRaw, onMounted } from "vue";
 import { apiRequest } from "../../services/api.js";
 import {
 	HttpMethods,
@@ -164,6 +161,7 @@ import {
 	OAuthCallbacks,
 	AuthProviderCodes,
 	ApplicationRoutes,
+	SignInTypes,
 } from "../../constants.js";
 import { useGlobalStore } from "../../stores/global/index.js";
 import { useI18n } from "vue-i18n";
@@ -177,16 +175,12 @@ const emit = defineEmits([
 	"sign-in-success",
 ]);
 
-const authProvider = ref(AuthProviderCodes.INTERNAL);
+const authProvider = ref(AuthProviderCodes.NONE);
 const signInFormRef = ref();
 const signingIn = ref(false);
 const signInFormData = reactive({
 	email: "",
 	password: "",
-});
-const LoginTypes = reactive({
-	SIMPLE: "login",
-	MFA: "mfa",
 });
 const signInFormRules = reactive({
 	email: [
@@ -234,7 +228,7 @@ const signIn = async () => {
 		hasFormValidationError = false;
 		signingIn.value = true;
 		const requestBody = {
-			type: LoginTypes.SIMPLE,
+			type: SignInTypes.SIMPLE,
 			email: signInFormData.email?.trim(),
 			password: signInFormData.password?.trim(),
 		};
@@ -254,11 +248,7 @@ const signIn = async () => {
 						loginToken: data.loginToken,
 					});
 				} else if (data?.accessToken) {
-					localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
-					globalStore.setUser(data.user);
-					globalStore.setAccessToken(data.accessToken);
-					locale.value = data.user.profile.culture.iso;
-					emit("sign-in-success");
+					postSignIn(data);
 				} else {
 					throw new this.$WebError(
 						"Access token or login token not found in response.",
@@ -294,6 +284,7 @@ const signIn = async () => {
 
 const signInThroughAuthProvider = async (event, provider) => {
 	globalStore.setLoader(true);
+	suppressErrors();
 	const redirect = {
 		action: OAuthCallbacks.SIGN_IN,
 		redirectPending: true,
@@ -307,6 +298,63 @@ const signInThroughAuthProvider = async (event, provider) => {
 		window.location.href = Endpoints.FB_SIGN_IN_REDIRECT_URL;
 	}
 };
+
+const handshakeWithRedirectionSource = () => {
+	if (
+		globalStore.redirect.signin.handshakePending &&
+		globalStore.redirect.signin.handshakeWith == ApplicationRoutes.AUTH
+	) {
+		globalStore.setRedirection({ action: OAuthCallbacks.SIGN_IN });
+		if (globalStore.buffer.loginResponse?.wrongEmailOrPassword) {
+			errors.wrongEmailOrPassword = true;
+		}
+		if (globalStore.buffer.loginResponse?.userNotRegistered) {
+			errors.userNotRegistered = true;
+		}
+		if (globalStore.buffer.loginResponse?.accessToken) {
+			postSignIn(globalStore.buffer.loginResponse);
+		}
+		if (globalStore.buffer.loginResponse?.loginToken) {
+			emit("mfa-sign-in", {
+				email: signInFormData.email,
+				password: signInFormData.password,
+				loginToken: globalStore.buffer.loginResponse.loginToken,
+				authProvider: globalStore.buffer.authProviderResponse.authProvider,
+				authProviderUserId: globalStore.buffer.authProviderResponse.id,
+			});
+		}
+		globalStore.setBuffer({
+			...globalStore.buffer,
+			authProviderResponse: {},
+			loginResponse: {},
+		});
+	}
+};
+
+const postSignIn = (data) => {
+	localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
+	globalStore.setUser(data.user);
+	globalStore.setAccessToken(data.accessToken);
+	locale.value = data.user.profile.culture.iso;
+	emit("sign-in-success");
+};
+
+const isAuthProviderNotSelected = (provider) => {
+	return Object.values(AuthProviderCodes)
+		.filter(
+			(v) =>
+				![
+					AuthProviderCodes.NONE,
+					AuthProviderCodes.INTERNAL,
+					provider,
+				].includes(v)
+		)
+		.includes(authProvider);
+};
+
+onMounted(() => {
+	handshakeWithRedirectionSource();
+});
 </script>
 
 <style lang="scss" scoped>

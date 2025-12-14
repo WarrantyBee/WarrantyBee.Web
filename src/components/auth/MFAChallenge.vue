@@ -97,6 +97,8 @@ import {
 	HttpStatus,
 	CacheKeys,
 	ErrorCodes,
+	SignInTypes,
+	AuthProviderCodes,
 } from "../../constants";
 import { useGlobalStore } from "../../stores/global/index";
 import { useI18n } from "vue-i18n";
@@ -120,10 +122,6 @@ const loginToken = ref("");
 const errors = reactive({
 	isAuthCodeEmpty: false,
 	invalidAuthCode: false,
-});
-const LoginTypes = reactive({
-	SIMPLE: "login",
-	MFA: "mfa",
 });
 
 const hasError = () => {
@@ -182,10 +180,25 @@ const resend = async () => {
 		resending.value = true;
 		enableResendBtn.value = false;
 		const requestBody = {
-			type: LoginTypes.SIMPLE,
+			type: SignInTypes.SIMPLE,
 			email: props.data.email,
 			password: props.data.password,
 		};
+
+		if (
+			Object.values(AuthProviderCodes)
+				.filter(
+					(v) =>
+						![AuthProviderCodes.NONE, AuthProviderCodes.INTERNAL].includes(v)
+				)
+				.includes(props.data.authProvider)
+		) {
+			requestBody.authProvider = props.data.authProvider;
+		}
+
+		if (props.data.authProviderUserId) {
+			requestBody.authProviderUserId = props.data.authProviderUserId;
+		}
 
 		const response = await apiRequest(
 			HttpMethods.POST,
@@ -227,9 +240,8 @@ const signIn = async () => {
 		signingIn.value = true;
 
 		const requestBody = {
-			type: LoginTypes.MFA,
+			type: SignInTypes.MFA,
 			email: props.data.email,
-			password: props.data.password,
 			otp: otp.value.join(""),
 			token: loginToken.value,
 		};
