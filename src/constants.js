@@ -12,11 +12,11 @@ const Endpoints = Object.freeze({
 	FB_SIGN_UP_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_UP_REDIRECT_URL.replace(
 		"__ORIGIN__",
 		encodeURIComponent(window.location.origin)
-	),
+	).replace("__APP_ID__", import.meta.env.VITE_FB_APP_ID),
 	FB_SIGN_IN_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_IN_REDIRECT_URL.replace(
 		"__ORIGIN__",
 		encodeURIComponent(window.location.origin)
-	),
+	).replace("__APP_ID__", import.meta.env.VITE_FB_APP_ID),
 });
 
 const CacheKeys = Object.freeze({
