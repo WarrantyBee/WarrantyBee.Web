@@ -231,6 +231,7 @@ const signIn = async () => {
 			type: SignInTypes.SIMPLE,
 			email: signInFormData.email?.trim(),
 			password: signInFormData.password?.trim(),
+			authProvider: AuthProviderCodes.INTERNAL,
 		};
 		const response = await apiRequest(
 			HttpMethods.POST,
@@ -246,6 +247,7 @@ const signIn = async () => {
 						email: signInFormData.email,
 						password: signInFormData.password,
 						loginToken: data.loginToken,
+						authProvider: AuthProviderCodes.INTERNAL,
 					});
 				} else if (data?.accessToken) {
 					postSignIn(data);
@@ -316,8 +318,8 @@ const handshakeWithRedirectionSource = () => {
 		}
 		if (globalStore.buffer.loginResponse?.loginToken) {
 			emit("mfa-sign-in", {
-				email: signInFormData.email,
-				password: signInFormData.password,
+				email: globalStore.buffer.authProviderResponse.email,
+				password: null,
 				loginToken: globalStore.buffer.loginResponse.loginToken,
 				authProvider: globalStore.buffer.authProviderResponse.authProvider,
 				authProviderUserId: globalStore.buffer.authProviderResponse.id,

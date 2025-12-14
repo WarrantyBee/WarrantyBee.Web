@@ -10,6 +10,7 @@ import {
 	ScreenLoaderLabels,
 	OAuthCallbackTypes,
 	SignInTypes,
+	ErrorCodes,
 } from "../constants";
 import { useGlobalStore } from "../stores/global";
 import { WebError } from "../services/telemetry";
@@ -46,6 +47,7 @@ export async function handleFacebookSignUpRedirect(to) {
 				break;
 		}
 	} catch (error) {
+		console.log(error);
 		redirect = { action: to.query.action };
 		notifyError("Oops! Something went wrong. Please try again later.");
 	} finally {
@@ -80,9 +82,9 @@ async function fetchSocialProfile(to) {
 }
 
 async function signInWithAuthProvider(to) {
-	let loginResponse = {};
+	const globalStore = useGlobalStore();
+	let buffer = { ...globalStore.buffer };
 	try {
-		const globalStore = useGlobalStore();
 		const body = {
 			type: SignInTypes.SIMPLE,
 			email: globalStore.buffer.authProviderResponse.email,
@@ -91,27 +93,27 @@ async function signInWithAuthProvider(to) {
 		};
 		const response = await apiRequest(HttpMethods.POST, Endpoints.LOGIN, body);
 		if (response?.status === HttpStatus.OK) {
-			loginResponse = response.data.data;
+			buffer.loginResponse = response.data.data;
 		} else {
 			throw new WebError("Unexpected response from server.", response);
 		}
 	} catch (error) {
 		if (error?.response?.status === HttpStatus.BAD_REQUEST) {
 			if (error.response.data?.error?.code === ErrorCodes.INVALID_CREDENTIALS) {
-				loginResponse = { wrongEmailOrPassword: true };
+				buffer.loginResponse = { wrongEmailOrPassword: true };
+			} else {
+				throw error;
 			}
 		} else if (error.response?.status === HttpStatus.NOT_FOUND) {
 			if (error.response.data?.error?.code === ErrorCodes.USER_NOT_REGISTERED) {
-				loginResponse = { userNotRegistered: true };
+				buffer.loginResponse = { userNotRegistered: true };
+			} else {
+				throw error;
 			}
 		} else {
 			throw error;
 		}
 	} finally {
-		const buffer = {
-			...globalStore.buffer,
-			loginResponse: loginResponse,
-		};
 		globalStore.setBuffer(buffer);
 	}
 }

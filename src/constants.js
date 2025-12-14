@@ -9,8 +9,14 @@ const Endpoints = Object.freeze({
 	CHANGE_PROFILE_PICTURE: "/users/profile/changeavatar",
 	GET_PROFILE_THROUGH_OAUTH: "oauth/profile",
 	UPDATE_USER_PROFILE: "/users/profile",
-	FB_SIGN_UP_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_UP_REDIRECT_URL,
-	FB_SIGN_IN_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_IN_REDIRECT_URL,
+	FB_SIGN_UP_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_UP_REDIRECT_URL.replace(
+		"__ORIGIN__",
+		encodeURIComponent(window.location.origin)
+	),
+	FB_SIGN_IN_REDIRECT_URL: import.meta.env.VITE_FB_SIGN_IN_REDIRECT_URL.replace(
+		"__ORIGIN__",
+		encodeURIComponent(window.location.origin)
+	),
 });
 
 const CacheKeys = Object.freeze({
