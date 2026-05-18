@@ -1,0 +1,32 @@
+---
+description: WarrantyBee.Web Vue SPA context, API integration, and routing conventions
+alwaysApply: true
+---
+
+# WarrantyBee.Web — Core
+
+Customer SPA: **Vue 3 + Vite + Pinia**. Talks to `WarrantyBee.API` only via `apiRequest()`.
+
+## Environment
+
+- `VITE_API_BASE_URL`, `VITE_API_TIMEOUT`, `VITE_API_WHITELISTED_URLS`
+- `VITE_RECAPTCHA_*`, `VITE_FB_*` for OAuth
+- Never commit `.env`
+
+## State
+
+- **Pinia** `useGlobalStore`: user, countries, cultures, phoneCodes, loader, menu index
+- Persist auth token in `localStorage` via `CacheKeys.ACCESS_TOKEN`
+
+## Constants
+
+All magic strings in `constants.js`: `Endpoints`, `HttpStatus`, `ErrorCodes`, `ApplicationRoutes`, `MenuItems`.
+
+## Error handling
+
+API returns `{ data, error: { code, message } }`. Map `ErrorCodes` (e.g. `1002`, `1016`, `1034`) to i18n messages — do not show raw server messages for security-sensitive flows.
+
+## Scope today
+
+Implemented: auth, MFA, forgot password, profile, OAuth callback, dashboard shell with menu.
+Not implemented: products, warranties — menu exists but routes are not built.

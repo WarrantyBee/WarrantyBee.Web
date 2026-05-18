@@ -1,0 +1,41 @@
+---
+description: Vue Router guards and API client usage patterns
+globs: "**/{router,services}/**/*.{js,vue}"
+alwaysApply: false
+---
+
+# Router & API
+
+## apiRequest
+
+```javascript
+import { apiRequest } from "../services/api";
+import { HttpMethods, Endpoints } from "../constants";
+
+const response = await apiRequest(HttpMethods.GET, Endpoints.GET_USER_PROFILE);
+if (response?.status === HttpStatus.OK) {
+  globalStore.setUser(response.data.data);
+}
+```
+
+- reCAPTCHA auto-attached on POST/PUT/PATCH (except `Endpoints.ALIVE`)
+- FormData: append `captchaResponse` manually for multipart
+
+## Router guards (`router/index.js`)
+
+- Fetch countries before auth when needed
+- `POST Endpoints.ALIVE` validates session
+- 401 → clear token, redirect to Auth
+- OAuth: only allow callback when `globalStore.redirect[action].redirectPending`
+
+## New routes
+
+1. Add to `ApplicationRoutes` + `ApplicationRouteNames`
+2. Register in `routes` array
+3. Extend `beforeEach` if auth rules differ from default
+4. Use `router.push({ name: ApplicationRouteNames.X })`
+
+## New endpoints
+
+1. `Endpoints.MY_ACTION = "/path"` (match API `/api` prefix if base URL excludes it — follow existing pattern)
+2. Whitelist in `.env` if public (no Bearer token)

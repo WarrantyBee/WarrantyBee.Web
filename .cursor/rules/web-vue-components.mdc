@@ -1,0 +1,42 @@
+---
+description: Vue 3 SFC patterns, Composition API, and component structure
+globs: "**/*.{vue,js}"
+alwaysApply: false
+---
+
+# Vue Components
+
+## SFC template
+
+```vue
+<template>...</template>
+<script setup>
+import { ref, computed } from "vue";
+// imports from constants, stores, services
+</script>
+<style lang="scss" scoped>...</style>
+```
+
+## Rules
+
+- **`<script setup>`** only for new components
+- Pages in `src/pages/`, reusable UI in `src/components/`
+- Use `useGlobalStore()` for shared state — no prop drilling for user/countries
+- Emit events with constants from `Events` (`on-success`, `on-error`)
+- i18n: `$t('key')` — add keys to locale files, not hardcoded user strings
+
+## Forms
+
+- Element Plus: `el-form`, `el-input`, validation rules
+- On submit: `apiRequest` + loader + notify success/error
+- Disable submit while loading
+
+## Auth components
+
+`components/auth/`: SignIn, SignUp, MFAChallenge, ForgotPassword — follow existing captcha + error code handling.
+
+## Do not
+
+- Call `axios` directly in `.vue` files
+- Use Options API `data()` / `methods` in new code
+- Leave `console.log` in committed code
