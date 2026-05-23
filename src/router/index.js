@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AuthPage from "../pages/AuthPage.vue";
 import DashboardPage from "../pages/DashboardPage.vue";
+import AdminApiKeysPage from "../pages/AdminApiKeysPage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
 import { apiRequest } from "../services/api";
 import { HttpMethods, CacheKeys, Endpoints, HttpStatus } from "../constants";
@@ -15,6 +16,11 @@ const routes = [
 		path: "/dashboard",
 		name: "Dashboard",
 		component: DashboardPage,
+	},
+	{
+		path: "/admin/api-keys",
+		name: "AdminApiKeys",
+		component: AdminApiKeysPage,
 	},
 	{
 		path: "/not-found",
