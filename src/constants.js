@@ -5,6 +5,7 @@ const Endpoints = {
 	LOGIN: "/auth/login",
 	FORGOT_PASSWORD: "/auth/forgotpassword",
 	RESET_PASSWORD: "/auth/resetpassword",
+	APPLICATIONS: "/applications",
 };
 
 const CacheKeys = {

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AuthPage from "../pages/AuthPage.vue";
 import DashboardPage from "../pages/DashboardPage.vue";
+import ApplicationsPage from "../pages/ApplicationsPage.vue";
 import AdminApiKeysPage from "../pages/AdminApiKeysPage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
 import { apiRequest } from "../services/api";
@@ -16,6 +17,11 @@ const routes = [
 		path: "/dashboard",
 		name: "Dashboard",
 		component: DashboardPage,
+	},
+	{
+		path: "/applications",
+		name: "Applications",
+		component: ApplicationsPage,
 	},
 	{
 		path: "/admin/api-keys",

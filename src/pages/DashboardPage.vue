@@ -1,7 +1,10 @@
 <template>
 	<div class="d-flex page-container" v-loading="signingOut">
-		<div class="menubar d-flex gap-3 w-100">
-			<div class="d-flex fb-80"></div>
+		<div class="menubar d-flex gap-3 w-100 px-4 align-items-center">
+			<div class="d-flex fb-80 align-items-center gap-4">
+				<h1 class="m-0 fs-4">Dashboard</h1>
+				<el-link @click="router.push('/applications')" :underline="false">Applications</el-link>
+			</div>
 			<div class="d-flex justify-content-end align-items-center fb-20">
 				<el-button
 					class="me-2"
