@@ -446,10 +446,7 @@
 								&nbsp;&nbsp;&nbsp;&nbsp;I agree to the
 								<b
 									><u
-										@click="
-											(showCompliance = true) &&
-												(activeDocument = ComplianceDocuments.PRIVACY_POLICY)
-										"
+										@click="router.push('/privacy')"
 										>Privacy Policy</u
 									></b
 								>
@@ -469,11 +466,7 @@
 								&nbsp;&nbsp;&nbsp;&nbsp;I agree to the
 								<b>
 									<u
-										@click="
-											(showCompliance = true) &&
-												(activeDocument =
-													ComplianceDocuments.TERMS_AND_CONDITIONS)
-										"
+										@click="router.push('/terms')"
 										>Terms and Conditions</u
 									> </b
 								>.
@@ -554,6 +547,7 @@
 
 <script setup>
 import { reactive, ref, defineEmits, defineProps, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
 import { apiRequest } from "../../services/api.js";
 import {
 	HttpMethods,

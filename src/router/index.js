@@ -8,15 +8,26 @@ import MyClaimsPage from "../pages/MyClaimsPage.vue";
 import B2BClaimsPage from "../pages/B2BClaimsPage.vue";
 import ApplicationsPage from "../pages/ApplicationsPage.vue";
 import AdminApiKeysPage from "../pages/AdminApiKeysPage.vue";
+import TermsPage from "../pages/TermsPage.vue";
+import PrivacyPage from "../pages/PrivacyPage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
-import { apiRequest } from "../services/api";
-import { HttpMethods, CacheKeys, Endpoints, HttpStatus } from "../constants";
+import { CacheKeys } from "../constants";
 
 const routes = [
 	{
 		path: "/",
 		name: "Auth",
 		component: AuthPage,
+	},
+	{
+		path: "/terms",
+		name: "Terms",
+		component: TermsPage,
+	},
+	{
+		path: "/privacy",
+		name: "Privacy",
+		component: PrivacyPage,
 	},
 	{
 		path: "/",
@@ -60,7 +71,7 @@ router.beforeEach(async (to, from, next) => {
 		return next({ name: "NotFound" });
 	}
 
-	if (to.name === "NotFound") {
+	if (to.name === "NotFound" || to.name === "Terms" || to.name === "Privacy") {
 		return next();
 	}
 
@@ -68,7 +79,6 @@ router.beforeEach(async (to, from, next) => {
 		if (!accessToken) {
 			return next({ name: "Auth" });
 		} else {
-			// Basic auth check
 			next();
 		}
 	} else {

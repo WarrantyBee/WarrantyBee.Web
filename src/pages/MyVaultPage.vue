@@ -54,15 +54,16 @@
 				<el-form-item label="Purchase Date" required>
 					<el-date-picker v-model="registerForm.purchaseDate" type="date" class="w-100" />
 				</el-form-item>
-				<el-form-item label="Upload Receipt">
+				<el-form-item label="Upload Receipt (Smart Scan)">
 					<el-upload
 						class="upload-demo"
 						drag
 						action="#"
 						:auto-upload="false"
+						:on-change="handleOcrUpload"
 					>
 						<el-icon class="el-icon--upload"><upload-filled /></el-icon>
-						<div class="el-upload__text">Drop file here or <em>click to upload</em></div>
+						<div class="el-upload__text">Drop receipt here or <em>click to scan</em></div>
 					</el-upload>
 				</el-form-item>
 			</el-form>
@@ -79,6 +80,8 @@ import { ref, onMounted, reactive } from "vue";
 import { Plus, Document, UploadFilled } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { getVault, registerAppliance } from "../services/vault";
+import { apiRequest } from "../services/api";
+import { HttpMethods } from "../constants";
 
 const loading = ref(false);
 const vault = ref([]);
@@ -108,6 +111,28 @@ const handleRegister = async () => {
 		loadVault();
 	} catch (e) {
 		ElMessage.error("Registration failed. Please check SKU.");
+	}
+};
+
+const handleOcrUpload = async (file) => {
+	const formData = new FormData();
+	formData.append("file", file.raw);
+	
+	loading.value = true;
+	try {
+		const res = await apiRequest(HttpMethods.POST, "/vault/parse-receipt", formData, {
+			headers: { "Content-Type": "multipart/form-data" }
+		});
+		
+		if (res.data) {
+			registerForm.sku = res.data.sku || "";
+			registerForm.purchaseDate = res.data.purchaseDate || "";
+			ElMessage.success("Receipt scanned! Fields auto-filled.");
+		}
+	} catch (e) {
+		ElMessage.warning("Could not auto-fill all fields from this receipt.");
+	} finally {
+		loading.value = false;
 	}
 };
 
