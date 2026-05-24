@@ -241,6 +241,7 @@ const signIn = async () => {
 				const data = response.data?.data;
 				if (data?.accessToken) {
 					localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
+					localStorage.setItem(CacheKeys.REFRESH_TOKEN, data.refreshToken);
 					signingIn.value = false;
 					emit("sign-in-success", data);
 				} else {

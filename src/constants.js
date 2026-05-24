@@ -3,6 +3,7 @@ const Endpoints = {
 	COUNTRIES: "/countries",
 	SIGN_UP: "/auth/signup",
 	LOGIN: "/auth/login",
+	REFRESH_TOKEN: "/auth/refresh",
 	FORGOT_PASSWORD: "/auth/forgotpassword",
 	RESET_PASSWORD: "/auth/resetpassword",
 	APPLICATIONS: "/applications",
@@ -10,6 +11,7 @@ const Endpoints = {
 
 const CacheKeys = {
 	ACCESS_TOKEN: "_WARRANTYBEE_API_ACCESS_TOKEN",
+	REFRESH_TOKEN: "_WARRANTYBEE_API_REFRESH_TOKEN",
 };
 
 const HttpMethods = {

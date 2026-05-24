@@ -213,6 +213,7 @@ const signIn = async () => {
 					});
 				} else if (data?.accessToken) {
 					localStorage.setItem(CacheKeys.ACCESS_TOKEN, data.accessToken);
+					localStorage.setItem(CacheKeys.REFRESH_TOKEN, data.refreshToken);
 					emit("sign-in-success");
 				} else {
 					throw new this.$WebError(

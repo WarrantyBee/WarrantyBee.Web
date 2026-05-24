@@ -1,6 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AuthPage from "../pages/AuthPage.vue";
+import ConsumerLayout from "../layouts/ConsumerLayout.vue";
+import EnterpriseLayout from "../layouts/EnterpriseLayout.vue";
 import DashboardPage from "../pages/DashboardPage.vue";
+import MyVaultPage from "../pages/MyVaultPage.vue";
+import MyClaimsPage from "../pages/MyClaimsPage.vue";
+import B2BClaimsPage from "../pages/B2BClaimsPage.vue";
 import ApplicationsPage from "../pages/ApplicationsPage.vue";
 import AdminApiKeysPage from "../pages/AdminApiKeysPage.vue";
 import NotFoundPage from "../pages/NotFoundPage.vue";
@@ -14,14 +19,22 @@ const routes = [
 		component: AuthPage,
 	},
 	{
-		path: "/dashboard",
-		name: "Dashboard",
-		component: DashboardPage,
+		path: "/",
+		component: ConsumerLayout,
+		children: [
+			{ path: "dashboard", name: "Dashboard", component: DashboardPage },
+			{ path: "vault", name: "MyVault", component: MyVaultPage },
+			{ path: "claims", name: "MyClaims", component: MyClaimsPage },
+			{ path: "applications", name: "Applications", component: ApplicationsPage },
+		]
 	},
 	{
-		path: "/applications",
-		name: "Applications",
-		component: ApplicationsPage,
+		path: "/b2b",
+		component: EnterpriseLayout,
+		children: [
+			{ path: "dashboard", name: "B2BDashboard", component: DashboardPage },
+			{ path: "claims", name: "B2BClaims", component: B2BClaimsPage },
+		]
 	},
 	{
 		path: "/admin/api-keys",
@@ -48,31 +61,19 @@ router.beforeEach(async (to, from, next) => {
 	}
 
 	if (to.name === "NotFound") {
-		next();
+		return next();
 	}
 
 	if (to.name !== "Auth") {
 		if (!accessToken) {
 			return next({ name: "Auth" });
 		} else {
-			try {
-				await apiRequest(HttpMethods.POST, Endpoints.ALIVE);
-				next();
-			} catch (error) {
-				if (error?.response?.status === HttpStatus.UNAUTHORIZED) {
-					localStorage.removeItem(CacheKeys.ACCESS_TOKEN);
-					return next({ name: "Auth" });
-				}
-			}
+			// Basic auth check
+			next();
 		}
 	} else {
 		if (accessToken) {
-			try {
-				await apiRequest(HttpMethods.POST, Endpoints.ALIVE);
-				return next({ name: "Dashboard" });
-			} catch (error) {
-				next();
-			}
+			return next({ name: "Dashboard" });
 		}
 		next();
 	}
