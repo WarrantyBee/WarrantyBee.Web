@@ -34,7 +34,7 @@ apiClient.interceptors.request.use(
 );
 
 apiClient.interceptors.response.use(
-	(response) => response.data, // Standardize to return data directly
+	(response) => response,
 	async (error) => {
 		const originalRequest = error.config;
 

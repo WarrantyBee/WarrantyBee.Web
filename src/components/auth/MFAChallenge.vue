@@ -98,6 +98,8 @@ import {
 	CacheKeys,
 	ErrorCodes,
 } from "../../constants";
+import { WebError, telemetry } from "../../services/telemetry.js";
+import { ElMessage } from "element-plus";
 
 const emit = defineEmits(["sign-in", "sign-in-success"]);
 const props = defineProps({
@@ -197,19 +199,20 @@ const resend = async () => {
 					startTimer();
 					resending.value = false;
 				} else {
-					throw new this.$WebError(
+					throw new WebError(
 						"Login token not found in response.",
 						response
 					);
 				}
 				break;
 			default:
-				throw new this.$WebError("Unexpected response from server.", response);
+				throw new WebError("Unexpected response from server.", response);
 		}
 	} catch (error) {
 		resending.value = false;
 		enableResendBtn.value = true;
-		notifyError("Oops! Something went wrong. Please try again later.");
+		ElMessage.error("Oops! Something went wrong. Please try again later.");
+		telemetry.logError(error);
 		throw error;
 	}
 };
@@ -245,7 +248,7 @@ const signIn = async () => {
 					signingIn.value = false;
 					emit("sign-in-success", data);
 				} else {
-					throw new this.$WebError(
+					throw new WebError(
 						"Access token not found in response.",
 						response
 					);
@@ -253,7 +256,7 @@ const signIn = async () => {
 				break;
 			}
 			default:
-				throw new this.$WebError("Unexpected response from server.", response);
+				throw new WebError("Unexpected response from server.", response);
 		}
 	} catch (error) {
 		signingIn.value = false;
@@ -265,7 +268,8 @@ const signIn = async () => {
 			}
 		}
 
-		notifyError("Oops! Something went wrong. Please try again later.");
+		ElMessage.error("Oops! Something went wrong. Please try again later.");
+		telemetry.logError(error);
 		throw error;
 	}
 };

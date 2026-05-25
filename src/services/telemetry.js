@@ -1,6 +1,6 @@
 import axios from "axios";
 
-function getBrowserContext() {
+export function getBrowserContext() {
 	return {
 		url: window.location.href,
 		userAgent: navigator.userAgent,
@@ -18,7 +18,7 @@ function getBrowserContext() {
 	};
 }
 
-class WebError extends Error {
+export class WebError extends Error {
 	constructor(message, info = {}) {
 		super(message);
 		this.name = "WebError";
@@ -41,7 +41,7 @@ class WebError extends Error {
 	}
 }
 
-class TelemetryService {
+export class TelemetryService {
 	constructor() {
 		this.apiUrl = import.meta.env.VITE_BETTERSTACK_SOURCE_URL;
 		this.sourceToken = import.meta.env.VITE_BETTERSTACK_ACCESS_TOKEN;
@@ -56,9 +56,12 @@ class TelemetryService {
 		});
 
 		this.maxRetries = 3;
+		this.isDisabled = false;
 	}
 
 	async logError(error) {
+		if (this.isDisabled) return;
+
 		const err =
 			error instanceof WebError
 				? error
@@ -81,6 +84,8 @@ class TelemetryService {
 	}
 
 	async logEvent(eventName, payload = {}) {
+		if (this.isDisabled) return;
+
 		const data = {
 			source: "frontend",
 			level: "info",
@@ -95,8 +100,7 @@ class TelemetryService {
 	}
 
 	async #sendWithRetry(data) {
-		if (!this.sourceToken) {
-			console.warn("⚠️ Better Stack source token missing — telemetry skipped.");
+		if (!this.sourceToken || this.isDisabled) {
 			return;
 		}
 
@@ -106,9 +110,14 @@ class TelemetryService {
 				await this.client.post("", data);
 				return;
 			} catch (err) {
+				if (err.response?.status === 401) {
+					console.warn("⚠️ Telemetry unauthorized (401) — disabling service.");
+					this.isDisabled = true;
+					break;
+				}
+
 				attempt++;
 				if (attempt >= this.maxRetries) {
-					console.warn("⚠️ Telemetry failed after retries:", err.message);
 					break;
 				}
 				await new Promise((r) => setTimeout(r, 500 * attempt));
@@ -117,15 +126,15 @@ class TelemetryService {
 	}
 }
 
+const telemetryInstance = new TelemetryService();
+
 export default {
 	install(app) {
-		const telemetry = new TelemetryService();
-
-		app.config.globalProperties.$telemetry = telemetry;
+		app.config.globalProperties.$telemetry = telemetryInstance;
 		app.config.globalProperties.$WebError = WebError;
 
 		window.addEventListener("error", (event) => {
-			telemetry.logError(
+			telemetryInstance.logError(
 				new WebError("Unhandled Error", {
 					message: event.message,
 					stack: event.error?.stack,
@@ -134,7 +143,7 @@ export default {
 		});
 
 		window.addEventListener("unhandledrejection", (event) => {
-			telemetry.logError(
+			telemetryInstance.logError(
 				new WebError("Unhandled Promise Rejection", { reason: event.reason })
 			);
 		});
@@ -142,3 +151,5 @@ export default {
 		console.info("✅ TelemetryService successfully initialized.");
 	},
 };
+
+export { telemetryInstance as telemetry };

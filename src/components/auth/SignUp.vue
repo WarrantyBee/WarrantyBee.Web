@@ -556,8 +556,8 @@ import {
 	Endpoints,
 	Genders,
 } from "../../constants.js";
-import { countdownEmits } from "element-plus";
-import { id } from "element-plus/es/locales.mjs";
+import { WebError, telemetry } from "../../services/telemetry.js";
+import { ElMessage } from "element-plus";
 
 const emit = defineEmits(["sign-in"]);
 const props = defineProps({
@@ -567,6 +567,7 @@ const props = defineProps({
 	},
 });
 
+const router = useRouter();
 const errors = reactive({
 	userAlreadyRegistered: false,
 });
@@ -949,7 +950,7 @@ const goToStep = async (step) => {
 		}
 		activeStep.value = step;
 	} catch (error) {
-		throw error;
+		// Silent
 	}
 };
 
@@ -1050,12 +1051,12 @@ const signUp = async () => {
 			requestBody
 		);
 		if (response.status === HttpStatus.OK) {
-			notifySuccess(
+			ElMessage.success(
 				"Your account was created successfully. You can now sign in to your account."
 			);
 			emit("sign-in");
 		} else {
-			throw new this.$WebError(
+			throw new WebError(
 				"Unexpected error occurred while signing up.",
 				response
 			);
@@ -1072,7 +1073,8 @@ const signUp = async () => {
 			}
 		}
 
-		notifyError("Oops! something went wrong. Please try again later.");
+		ElMessage.error("Oops! something went wrong. Please try again later.");
+		telemetry.logError(error);
 		throw error;
 	} finally {
 		signingUp.value = false;

@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, defineEmits, toRaw } from "vue";
+import { reactive, ref, defineEmits } from "vue";
 import { apiRequest } from "../../services/api.js";
 import {
 	HttpMethods,
@@ -127,6 +127,8 @@ import {
 	CacheKeys,
 } from "../../constants.js";
 import { useRouter } from "vue-router";
+import { WebError, telemetry } from "../../services/telemetry.js";
+import { ElMessage } from "element-plus";
 
 const router = useRouter();
 const emit = defineEmits([
@@ -216,14 +218,14 @@ const signIn = async () => {
 					localStorage.setItem(CacheKeys.REFRESH_TOKEN, data.refreshToken);
 					emit("sign-in-success");
 				} else {
-					throw new this.$WebError(
+					throw new WebError(
 						"Access token or login token not found in response.",
 						response
 					);
 				}
 				break;
 			default:
-				throw new this.$WebError("Unexpected response from server.", response);
+				throw new WebError("Unexpected response from server.", response);
 		}
 	} catch (error) {
 		signingIn.value = false;
@@ -243,7 +245,8 @@ const signIn = async () => {
 			}
 		}
 
-		notifyError("Oops! Something went wrong. Please try again later.");
+		ElMessage.error("Oops! Something went wrong. Please try again later.");
+		telemetry.logError(error);
 		throw error;
 	}
 };

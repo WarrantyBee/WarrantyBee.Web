@@ -177,6 +177,8 @@ import {
 	ErrorCodes,
 } from "../../constants";
 import { apiRequest } from "../../services/api";
+import { WebError, telemetry } from "../../services/telemetry.js";
+import { ElMessage } from "element-plus";
 
 const emit = defineEmits(["sign-in"]);
 
@@ -322,7 +324,7 @@ const sendOtp = async () => {
 				startTimer();
 				break;
 			default:
-				throw new this.$WebError("Unexpected response from server.", response);
+				throw new WebError("Unexpected response from server.", response);
 		}
 	} catch (error) {
 		sending.value = false;
@@ -345,7 +347,8 @@ const sendOtp = async () => {
 			}
 		}
 
-		notifyError("Oops! Something went wrong. Please try again later.");
+		ElMessage.error("Oops! Something went wrong. Please try again later.");
+		telemetry.logError(error);
 		throw error;
 	}
 };
@@ -372,11 +375,11 @@ const resetPassword = async () => {
 		switch (response.status) {
 			case HttpStatus.OK:
 				resetting.value = true;
-				notifySuccess("Your password reset was successful.");
+				ElMessage.success("Your password reset was successful.");
 				emit("sign-in");
 				break;
 			default:
-				throw new this.$WebError("Unexpected response from server.", response);
+				throw new WebError("Unexpected response from server.", response);
 		}
 	} catch (error) {
 		resetting.value = false;
@@ -398,7 +401,8 @@ const resetPassword = async () => {
 			}
 		}
 
-		notifyError("Oops! Something went wrong. Please try again later.");
+		ElMessage.error("Oops! Something went wrong. Please try again later.");
+		telemetry.logError(error);
 		throw error;
 	}
 };
